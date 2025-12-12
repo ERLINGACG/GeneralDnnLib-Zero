@@ -8,13 +8,14 @@
 #include <opencv2/core/mat.hpp>
 #include <vector>
 
+#include "../param.h"
+
 namespace gdlz::cv_framework::param
 {
 
-    struct YoloParam
+    struct YoloParam : BaseParam
     {
-        std::unique_ptr<cv::Mat> input;
-        std::unique_ptr<cv::Mat> blob;
+
         std::unique_ptr<cv::Mat> forward_output;
         std::unique_ptr<std::vector<cv::Rect>> boxes       =std::make_unique<std::vector<cv::Rect>>();
         std::unique_ptr<std::vector<float>> confidences    =std::make_unique<std::vector<float>>();

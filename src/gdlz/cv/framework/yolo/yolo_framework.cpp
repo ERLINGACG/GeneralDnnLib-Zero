@@ -1,10 +1,10 @@
 //
 // Created by HP on 2025/12/9.
 //
-#include "gdlz/cv/framework/yolo_framework.h"
+#include "../../../../../include/gdlz/cv/framework/yolo/yolo_framework.h"
 #include "dylog/logger.h"
 
-using gdlz::cv_framework::YoloFramework;
+using gdlz::cv_framework::yolo::YoloFramework;
 using gdlz::resources::YoloResourceDirector;
 using dylog::DynamicLogger;
 
@@ -12,13 +12,6 @@ YoloFramework& YoloFramework::ResourceDirector(YoloResourceDirector& director)
 {
 
     director.SetConfPath(this->conf_path).Hand(this->resource);
-    DynamicLogger().
-        setInvokeName("YoloFramework")
-        .debug("conf_path:{}",director.conf_path)
-        .debug(
-                "model_path:{}",this->resource.model_path.c_str()
-        );
-    // dylog::logger().info("model_path:{}",this->resource.model_path);
     return *this;
 }
 
@@ -168,8 +161,7 @@ YoloFramework& YoloFramework::PostProcess(param::YoloParam& param)
 
 YoloFramework& YoloFramework::GetOutput(data::YoloOutput& output, const param::YoloParam& param)
 {
-
-    output.SetData(*param.input,*param.describe_str);
+    output.SetData(*param.input, *param.describe_str);
     return *this;
 }
 

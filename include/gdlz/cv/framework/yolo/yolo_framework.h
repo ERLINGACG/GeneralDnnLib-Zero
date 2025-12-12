@@ -10,9 +10,9 @@
 #include "yolo_param.h"
 #include "gdlz/export.h"
 #include "gdlz/cv/data/out_put.h"
-#include "gdlz/cv/res/yolo_resources.h"
+#include "yolo_resources.h"
 
-namespace gdlz::cv_framework
+namespace gdlz::cv_framework::yolo
 {
     using resources::YoloResource;
 

@@ -1,7 +1,8 @@
 //
 // Created by HP on 2025/12/9.
 //
-#include "gdlz/cv/res/yolo_resources.h"
+// #include "../../../../include/gdlz/cv/framework/yolo/yolo_resources.h"
+#include "gdlz/cv/framework/yolo/yolo_resources.h"
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <dylog/logger.h>
@@ -25,6 +26,7 @@ YoloResourceDirector& YoloResourceDirector::Hand(YoloResource& resource)
         resource.model_path=env["model_path"].get<std::string>();
         logger.debug("model_path: {}",resource.model_path.c_str());
     };
+
     auto set_model_conf_thresh=[&](json& env)
     {
         resource.conf_thresh=env["conf_thresh"].get<float>();
