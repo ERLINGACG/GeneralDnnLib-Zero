@@ -18,23 +18,23 @@ namespace gdlz::cv_framework::yolo
 
 
 
-    class GDLZ_CPP_API YoloFramework {
+    class GDLZ_CPP_API CV_YoloFramework {
 
             YoloResource resource{};
             std::string  conf_path;
 
         public:
-            explicit YoloFramework(std::string  conf_path):conf_path(std::move(conf_path)){};
-            ~YoloFramework() =default;
+            explicit CV_YoloFramework(std::string  conf_path):conf_path(std::move(conf_path)){};
+            ~CV_YoloFramework() =default;
 
-            YoloFramework& ResourceDirector(resources::YoloResourceDirector& director);
-            YoloFramework& Input(cv::Mat& input,              param::YoloParam& param);
-            YoloFramework& Input(int size,unsigned char* byte,param::YoloParam& param);
-            YoloFramework& SetBlob(param::YoloParam& param);
-            YoloFramework& Forward(param::YoloParam& param);
-            YoloFramework& Process(param::YoloParam& param);
-            YoloFramework& PostProcess(param::YoloParam& param);
-            YoloFramework& GetOutput(data::YoloOutput& output, const param::YoloParam& param);
+            CV_YoloFramework& ResourceDirector(resources::CV_YoloResourceDirector& director);
+            CV_YoloFramework& Input(cv::Mat& input,              param::YoloParam& param);
+            CV_YoloFramework& Input(int size,unsigned char* byte,param::YoloParam& param);
+            CV_YoloFramework& SetBlob(param::YoloParam& param);
+            CV_YoloFramework& Forward(param::YoloParam& param);
+            CV_YoloFramework& Process(param::YoloParam& param);
+            CV_YoloFramework& PostProcess(param::YoloParam& param);
+            CV_YoloFramework& GetOutput(data::YoloOutput& output, const param::YoloParam& param);
 
 
 

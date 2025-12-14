@@ -10,7 +10,7 @@ namespace gdlz::cv_framework::data
 {
     struct YoloOutput
     {
-        std::unique_ptr<unsigned char[]> byte{};
+        std::unique_ptr<unsigned char[]> byte_data{};
         std::unique_ptr<char[]> json_str{};
         int json_size{};
         int size{};
@@ -22,8 +22,8 @@ namespace gdlz::cv_framework::data
             std::vector<unsigned char> encoded;
             cv::imencode(".jpeg", mat, encoded, params_);
             size =  static_cast<int>(encoded.size());
-            byte = std::make_unique<unsigned char[]>(encoded.size());
-            memcpy(byte.get(), encoded.data(), encoded.size());
+            byte_data = std::make_unique<unsigned char[]>(encoded.size());
+            memcpy(byte_data.get(), encoded.data(), encoded.size());
 
 
             auto buffer = std::make_unique<char[]>(json_str_.size() + 1);

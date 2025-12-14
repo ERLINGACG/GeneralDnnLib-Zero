@@ -25,15 +25,15 @@ namespace gdlz::resources
         std::unique_ptr<std::vector<std::string>> class_names= std::make_unique<std::vector<std::string>>();
     };
 
-    class GDLZ_CPP_API YoloResourceDirector : public ResourceDirectorBase<YoloResource,YoloResourceDirector>
+    class GDLZ_CPP_API CV_YoloResourceDirector : public ResourceDirectorBase<YoloResource,CV_YoloResourceDirector>
     {
 
         public:
             std::string conf_path;
 
-            ~YoloResourceDirector() override =default;
-            YoloResourceDirector& Hand(YoloResource& resource) override;
-            YoloResourceDirector& SetConfPath(const std::string& conf_path);
+            ~CV_YoloResourceDirector() override =default;
+            CV_YoloResourceDirector& Hand(YoloResource& resource) override;
+            CV_YoloResourceDirector& SetConfPath(const std::string& conf_path);
     };
 
 

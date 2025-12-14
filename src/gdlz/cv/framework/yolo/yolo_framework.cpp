@@ -4,31 +4,31 @@
 #include "../../../../../include/gdlz/cv/framework/yolo/yolo_framework.h"
 #include "dylog/logger.h"
 
-using gdlz::cv_framework::yolo::YoloFramework;
-using gdlz::resources::YoloResourceDirector;
+using gdlz::cv_framework::yolo::CV_YoloFramework;
+using gdlz::resources::CV_YoloResourceDirector;
 using dylog::DynamicLogger;
 
-YoloFramework& YoloFramework::ResourceDirector(YoloResourceDirector& director)
+CV_YoloFramework& CV_YoloFramework::ResourceDirector(CV_YoloResourceDirector& director)
 {
 
     director.SetConfPath(this->conf_path).Hand(this->resource);
     return *this;
 }
 
-YoloFramework& YoloFramework::Input(cv::Mat& input, param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::Input(cv::Mat& input, param::YoloParam& param)
 {
     param.input=std::make_unique<cv::Mat>(input);
     return *this;
 }
 
-YoloFramework& YoloFramework::Input(int size, unsigned char* byte, param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::Input(int size, unsigned char* byte, param::YoloParam& param)
 {
     const std::vector buf(byte,byte+size);
     param.input=std::make_unique<cv::Mat>(cv::imdecode(buf, cv::IMREAD_COLOR));
     return *this;
 }
 
-YoloFramework& YoloFramework::SetBlob(param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::SetBlob(param::YoloParam& param)
 {
     param.blob=std::make_unique<cv::Mat>(
        cv::dnn::blobFromImage(
@@ -44,13 +44,13 @@ YoloFramework& YoloFramework::SetBlob(param::YoloParam& param)
     return *this;
 }
 
-YoloFramework& YoloFramework::Forward(param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::Forward(param::YoloParam& param)
 {
     param.forward_output=std::make_unique<cv::Mat>(this->resource.Net->forward());
     return *this;
 }
 
-YoloFramework& YoloFramework::Process(param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::Process(param::YoloParam& param)
 {
     int numChannels = param.forward_output->size[1];  // 84（4坐标 + 80类别）
     int numAnchors = param.forward_output->size[2];   // 8400（候选框数量）
@@ -93,7 +93,7 @@ YoloFramework& YoloFramework::Process(param::YoloParam& param)
     return *this;
 }
 
-YoloFramework& YoloFramework::PostProcess(param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::PostProcess(param::YoloParam& param)
 {
     cv::dnn::NMSBoxes(
             *param.boxes,
@@ -159,7 +159,7 @@ YoloFramework& YoloFramework::PostProcess(param::YoloParam& param)
     return *this;
 }
 
-YoloFramework& YoloFramework::GetOutput(data::YoloOutput& output, const param::YoloParam& param)
+CV_YoloFramework& CV_YoloFramework::GetOutput(data::YoloOutput& output, const param::YoloParam& param)
 {
     output.SetData(*param.input, *param.describe_str);
     return *this;

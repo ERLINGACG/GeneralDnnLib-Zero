@@ -6,14 +6,14 @@
 #include "nlohmann/json.hpp"
 #include <fstream>
 #include <dylog/logger.h>
-using gdlz::resources::YoloResourceDirector;
+using gdlz::resources::CV_YoloResourceDirector;
 using nlohmann::json;
-YoloResourceDirector& YoloResourceDirector::Hand(YoloResource& resource)
+CV_YoloResourceDirector& CV_YoloResourceDirector::Hand(YoloResource& resource)
 {
     using std::unique_ptr;
     using std::ifstream;
 
-    auto logger=dylog::DynamicLogger().setInvokeName("YoloResourceDirector");
+    auto logger=dylog::DynamicLogger().setInvokeName("CV_YoloResourceDirector");
 
     auto set_env=[&](json j,json& env)
     {
@@ -131,7 +131,7 @@ YoloResourceDirector& YoloResourceDirector::Hand(YoloResource& resource)
     return *this;
 }
 
-YoloResourceDirector& YoloResourceDirector::SetConfPath(const std::string& conf_path)
+CV_YoloResourceDirector& CV_YoloResourceDirector::SetConfPath(const std::string& conf_path)
 {
     this->conf_path = conf_path;
     return *this;
