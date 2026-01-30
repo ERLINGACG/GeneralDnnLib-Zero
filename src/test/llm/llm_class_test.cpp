@@ -98,7 +98,7 @@ class LLmAI
                         std::cerr << "Error: detokenize error" << std::endl;
                         return *this;
                     }
-                    std::cout << deprompt;
+                    std::cout << "deprompt:" << deprompt << std::endl;
                     batch.token[0] = next_token;
                     batch.n_tokens = 1;
                     response += deprompt;

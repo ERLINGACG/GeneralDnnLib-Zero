@@ -6,12 +6,20 @@
 gdlz::llm::gguf::LLm_GGuf_Framework* gdlz::llm::gguf_export::CreateLLm_GGuf_Framework(const char* conf_path)
 {
         const auto framework = new gguf::LLm_GGuf_Framework(conf_path);
-        auto llm_gguf_resource_director = gguf::LLm_GGuf_ResourceDirector();
+        auto llm_gguf_resource_director = resources::llm::gguf::LLm_GGuf_ResourceDirector();
         framework->ResourceDirector(llm_gguf_resource_director);
         return framework;
 }
 
-void gdlz::llm::gguf_export::DestroyLLm_GGuf_Framework(const gguf::LLm_GGuf_Framework* framework)
+void gdlz::llm::gguf_export::DestroyLLm_GGuf_Framework(gguf::LLm_GGuf_Framework* framework)
 {
+        framework->releases();
         delete framework;
+
+}
+
+
+void gdlz::llm::gguf_export::ExampleSend(const gguf::LLm_GGuf_Framework* framework)
+{
+        framework->ExampleSend();
 }
