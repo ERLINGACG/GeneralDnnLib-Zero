@@ -477,7 +477,38 @@ function(task_llm_test)
 
 endfunction()
 
+function(task_trt_test)
+  set(TRT_FILE
+            src/test/trt/trt_test.cpp
+  )
 
+  set(TRT_INCLUDE
+         ./include
+          ${CLIB_ROOT}/opencv/include
+          ${CLIB_ROOT}/TensorRT-10.12.0.36/include
+          E:/VScode/CUDA/include
+  )
+  set(TRT_LIBS_PATH
+          ${CLIB_ROOT}/TensorRT-10.12.0.36/lib
+          E:/VScode/CUDA/lib/x64
+
+  )
+
+  set(TRT_LIBS_NAME
+          nvinfer_10
+          cudart.lib
+  )
+
+  task_exe(
+            GeneralDnnLib_TRT_Test            # TARGET_NAME
+            "${TRT_FILE}"                     # FILES_LIST（单文件/多文件都支持）
+            "${TRT_INCLUDE}"             # INCLUDE_PATHS（多值）
+            "${TRT_LIBS_PATH}"             # LIBRARY_PATHS（多值）
+            "${TRT_LIBS_NAME}"                  # LIBS（多值）
+            "gdlz_test"                        # OUTPUT_DIR（可选）
+  )
+
+endfunction()
 task_invoke_test()
 task_onnx_test()
 task_torch_test()
@@ -485,3 +516,4 @@ task_torch_test()
 task_GeneralDnnLib_Framework_Lib()
 task_StableDiffusion_test()
 task_llm_test()
+task_trt_test()

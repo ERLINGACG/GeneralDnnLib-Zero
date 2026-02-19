@@ -5,6 +5,7 @@
 #include <llama.h>
 #include <fstream>
 #include <dylog/logger.h>
+
 #include <nlohmann/json.hpp>
 using gdlz::resources::llm::gguf::LLm_GGuf_ResourceDirector;
 using nlohmann::json;
@@ -28,11 +29,16 @@ LLm_GGuf_ResourceDirector& LLm_GGuf_ResourceDirector::Hand(LLm_GGuf_Resource& re
                 logger.debug("use model_path: {}",resource.model_path.c_str());
         };
 
-        auto load_model=[&]()
+        // auto set_model_params=[&](json env)
+        // {
+        //         resource.model_params.n_gpu_layers=env["n_gpu_layers"].get<int>();
+        // };
+
+        auto load_model=[&](json env)
         {
-                resource.model_params.n_gpu_layers=20;
-                resource.model_params.use_mmap=true;
-                resource.model_params.use_mlock=false;
+                resource.model_params.n_gpu_layers=env["n_gpu_layers"].get<int>();
+                resource.model_params.use_mmap=env["use_mmap"].get<bool>();
+                resource.model_params.use_mlock=env["use_mlock"].get<bool>();
 
                 resource.model=llama_model_load_from_file(
                                         resource.model_path.c_str(),
@@ -46,10 +52,11 @@ LLm_GGuf_ResourceDirector& LLm_GGuf_ResourceDirector::Hand(LLm_GGuf_Resource& re
                 }
 
         };
-        auto set_context=[&]()
+        auto set_context=[&](json env)
         {
-                resource.context_params.n_ctx=2048;
-                resource.context_params.n_batch=512;
+                resource.context_params.n_ctx=env["n_ctx"].get<int>();
+                resource.context_params.n_batch=env["n_batch"].get<int>();
+
                 resource.context=llama_init_from_model(resource.model, resource.context_params);
 
                 if (resource.context == nullptr) {
@@ -68,13 +75,27 @@ LLm_GGuf_ResourceDirector& LLm_GGuf_ResourceDirector::Hand(LLm_GGuf_Resource& re
                 }
         };
 
-        auto set_sampler=[&]()
+        auto set_sampler=[&](json env)
         {
-                llama_sampler_chain_add(resource.sampler, llama_sampler_init_temp(0.2));
-                llama_sampler_chain_add(resource.sampler, llama_sampler_init_top_k(30));
-                llama_sampler_chain_add(resource.sampler, llama_sampler_init_top_p(0.9, 1));
+                const char *grammar_str = R"(
+                        root ::="answer:" "{" name "," age "}"
+                        name ::=" 'name' :"[^,]+
+                        age  ::=" 'age' :"[0-9]+
+                        )";
+                struct llama_sampler* grammar_sampler = llama_sampler_init_grammar(
+                       resource.vocab,          // 模型词汇表
+                       grammar_str,// GBNF规则字符串
+                       "root"          // 根规则名
+                   );
+                if (grammar_sampler == nullptr) {
+                        logger.error("init grammar sampler failed");
+                }
+                llama_sampler_chain_add(resource.sampler, grammar_sampler);
+                llama_sampler_chain_add(resource.sampler, llama_sampler_init_temp(env["temp"].get<float>()));
+                llama_sampler_chain_add(resource.sampler, llama_sampler_init_top_k(env["top_k"].get<int>()));
+                llama_sampler_chain_add(resource.sampler, llama_sampler_init_top_p(env["top_p"].get<float>(), 1));
                 llama_sampler_chain_add(resource.sampler, llama_sampler_init_dist(time(nullptr)));
-                logger.debug("sampler init success");
+
         };
 
         try{
@@ -86,10 +107,10 @@ LLm_GGuf_ResourceDirector& LLm_GGuf_ResourceDirector::Hand(LLm_GGuf_Resource& re
 
                 set_env(config,env);
                 set_mode_path(env);
-                load_model();
-                set_context();
+                load_model(env);
+                set_context(env);
                 set_llama_vocab();
-                set_sampler();
+                set_sampler(env);
         }catch (std::exception& e) {
                 logger.error("exception: {}",e.what());
         }

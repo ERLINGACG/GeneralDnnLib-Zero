@@ -8,6 +8,9 @@
 
 #include "llm_gguf_resources_director.h"
 #include "gdlz/export.h"
+#include "gdlz/llm/data/llm_gguf_batch.h"
+#include "gdlz/llm/data/llm_gguf_stream.h"
+
 namespace  gdlz::llm::gguf
 {
 
@@ -21,6 +24,10 @@ namespace  gdlz::llm::gguf
         LLm_GGuf_Framework& ResourceDirector(resources::llm::gguf::LLm_GGuf_ResourceDirector& director);
         void releases();
         void ExampleSend() const;
+
+        int32_t SendExample(const char* prompt,batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
+        void  InitBatch(const char* prompt,batch::LLM_GGUF_Batch& batch) const;
+        void  Reasoning(batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
     };
 }
 #endif //GENERALDNNLIB_ZERO_LLM_GGUF_FRAMEWORK_H
