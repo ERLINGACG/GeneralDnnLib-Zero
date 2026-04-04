@@ -17,7 +17,7 @@ namespace gdlz::resources::llm{
         llama_sampler_chain_params sampler_chain_params=llama_sampler_chain_default_params();
         const llama_vocab* vocab = nullptr;
         llama_context* context = nullptr;
-        llama_sampler* sampler =  llama_sampler_chain_init(sampler_chain_params);
+        mutable llama_sampler* sampler =  llama_sampler_chain_init(sampler_chain_params);
         llama_model* model{};
 
         void release(){

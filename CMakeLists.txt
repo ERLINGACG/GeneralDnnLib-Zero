@@ -171,6 +171,7 @@ function(task_GeneralDnnLib_Framework_Lib)
     set(GDLZ_LIBS_NAME
             opencv_world4120
             llama
+            ggml
     )
 
     task_lib(
@@ -181,6 +182,43 @@ function(task_GeneralDnnLib_Framework_Lib)
             "${GDLZ_LIBS_NAME}"                  # LIBS（多值）
             "gdlz_test_lib"                         # OUTPUT_DIR（可选）
     )
+endfunction()
+
+
+function(task_GeneralDnnLib_Framework_LLM_GGUF_Lib)
+    set(CPP_FILES
+
+
+            src/gdlz/llm/llama_cpp/llm_gguf_resources_director.cpp
+            src/gdlz/llm/llama_cpp/llm_gguf_framework_export.cpp
+            src/gdlz/llm/llama_cpp/llm_gguf_framework.cpp
+    )
+    set(GDLZ_INCLUDE_PATH
+            ./include
+            ${CLIB_ROOT}/log/dylog/include
+            ${CLIB_ROOT}/opencv/include
+            ${CLIB_ROOT}/json/nlohmann
+            ${CLIB_ROOT}/llama.cpp/include
+    )
+    set(GDLZ_LIB_PATH
+            ${CLIB_ROOT}/opencv/lib
+            ${CLIB_ROOT}/llama.cpp/lib
+    )
+    set(GDLZ_LIBS_NAME
+            opencv_world4120
+            llama
+            ggml
+    )
+
+    task_lib(
+            GeneralDnnLib_Framework_LLM_GGUF_Lib            # TARGET_NAME
+            "${CPP_FILES}"                    # FILES_LIST（单文件/多文件都支持）
+            "${GDLZ_INCLUDE_PATH}"             # INCLUDE_PATHS（多值）
+            "${GDLZ_LIB_PATH}"             # LIBRARY_PATHS（多值）
+            "${GDLZ_LIBS_NAME}"                  # LIBS（多值）
+            "gdlz_test_lib"                         # OUTPUT_DIR（可选）
+    )
+
 endfunction()
 
 function(task_invoke_test)
@@ -514,6 +552,11 @@ task_onnx_test()
 task_torch_test()
 #task_tensorf_test() //已否决
 task_GeneralDnnLib_Framework_Lib()
+task_GeneralDnnLib_Framework_LLM_GGUF_Lib()
+
 task_StableDiffusion_test()
 task_llm_test()
 task_trt_test()
+
+
+add_subdirectory(./src/gdlz/llm/llama_cpp)
