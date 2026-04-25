@@ -517,7 +517,7 @@ endfunction()
 
 function(task_trt_test)
   set(TRT_FILE
-            src/test/trt/trt_test.cpp
+            src/test/trt/trt_test_2.cpp
   )
 
   set(TRT_INCLUDE
@@ -560,3 +560,5 @@ task_trt_test()
 
 
 add_subdirectory(./src/gdlz/llm/llama_cpp)
+add_subdirectory(./src/gdlz/plugin)
+add_subdirectory(./src/gdlz/trt)

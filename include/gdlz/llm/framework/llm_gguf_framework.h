@@ -24,21 +24,25 @@ namespace  gdlz::llm::gguf
         {
                 conf_path =config_path;
         };
+
+
         LLm_GGuf_Framework& ResourceDirector(resources::llm::gguf::LLm_GGuf_ResourceDirector& director);
+
         void releases();
-        void ExampleSend() const;
 
-        int32_t SendExample(const char* prompt,batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
-
-        void  SetSamplerRT(
-            const char* gbnf_str,
-            bool use_grammar,
-            int top_k,
-            float top_p,
-            float temp
-        ) const;
-        void  InitBatch(const char* prompt,batch::LLM_GGUF_Batch& batch) const;
-        void  Reasoning(batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
+        // void ExampleSend() const;
+        //
+        // int32_t SendExample(const char* prompt,batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
+        //
+        // void  SetSamplerRT(
+        //     const char* gbnf_str,
+        //     bool use_grammar,
+        //     int top_k,
+        //     float top_p,
+        //     float temp
+        // ) const;
+        // void  InitBatch(const char* prompt,batch::LLM_GGUF_Batch& batch) const;
+        // void  Reasoning(batch::LLM_GGUF_Batch& batch,data::LLM_GGUF_Stream& stream) const;
 
         void  SetSamplerASync(
             const batch::LLM_GGUF_Context_RTParam& param,
@@ -69,9 +73,10 @@ namespace  gdlz::llm::gguf
             batch::LLM_GGUF_Context& context
             ) const;
 
-        float* GetEmbeddings(
+        void GetEmbeddings(
             batch::LLM_GGUF_Batch& batch,
-            batch::LLM_GGUF_Context& context
+            batch::LLM_GGUF_Context& context,
+            data::LLM_GGUF_Embedding& embedding
             ) const;
 
 

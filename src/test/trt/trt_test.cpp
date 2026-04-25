@@ -16,41 +16,8 @@ public:
         }
     }
 };
-
-// void doInference(IExecutionContext& context, float* input, float* output, int batchSize, int inputSize, int outputSize)
-// {
-//     const ICudaEngine& engine = context.getEngine();
-//     assert(engine.getNbBindings() == 2);
-//
-//     // Allocate GPU buffers
-//     void* buffers[2];
-//     const int inputIndex = engine.getBindingIndex("images");
-//     const int outputIndex = engine.getBindingIndex("output");
-//     buffers[inputIndex] = safeCudaMalloc(inputSize * batchSize * sizeof(float));
-//     buffers[outputIndex] = safeCudaMalloc(outputSize * batchSize * sizeof(float));
-//
-//     // Create stream
-//     cudaStream_t stream;
-//     cudaStreamCreate(&stream);
-//
-//     // Copy input data to GPU
-//     cudaMemcpyAsync(buffers[inputIndex], input, inputSize * batchSize * sizeof(float), cudaMemcpyHostToDevice, stream);
-//
-//     // Execute inference
-//     context.enqueue(batchSize, buffers, stream, nullptr);
-//
-//     // Copy output data to CPU
-//     cudaMemcpyAsync(output, buffers[outputIndex], outputSize * batchSize * sizeof(float), cudaMemcpyDeviceToHost, stream);
-//     cudaStreamSynchronize(stream);
-//
-//     // Release stream and buffers
-//     cudaStreamDestroy(stream);
-//     cudaFree(buffers[inputIndex]);
-//     cudaFree(buffers[outputIndex]);
-// }
-int main()
+auto re1()
 {
-
     Logger logger;
     const std::string engine_file_path = "model.trt"; // 你的引擎文件路径
     std::ifstream file(engine_file_path, std::ios::binary | std::ios::ate);
@@ -204,4 +171,82 @@ int main()
     // context->setTensorAddress("images", );
 
     return 0;
+}
+// void doInference(IExecutionContext& context, float* input, float* output, int batchSize, int inputSize, int outputSize)
+// {
+//     const ICudaEngine& engine = context.getEngine();
+//     assert(engine.getNbBindings() == 2);
+//
+//     // Allocate GPU buffers
+//     void* buffers[2];
+//     const int inputIndex = engine.getBindingIndex("images");
+//     const int outputIndex = engine.getBindingIndex("output");
+//     buffers[inputIndex] = safeCudaMalloc(inputSize * batchSize * sizeof(float));
+//     buffers[outputIndex] = safeCudaMalloc(outputSize * batchSize * sizeof(float));
+//
+//     // Create stream
+//     cudaStream_t stream;
+//     cudaStreamCreate(&stream);
+//
+//     // Copy input data to GPU
+//     cudaMemcpyAsync(buffers[inputIndex], input, inputSize * batchSize * sizeof(float), cudaMemcpyHostToDevice, stream);
+//
+//     // Execute inference
+//     context.enqueue(batchSize, buffers, stream, nullptr);
+//
+//     // Copy output data to CPU
+//     cudaMemcpyAsync(output, buffers[outputIndex], outputSize * batchSize * sizeof(float), cudaMemcpyDeviceToHost, stream);
+//     cudaStreamSynchronize(stream);
+//
+//     // Release stream and buffers
+//     cudaStreamDestroy(stream);
+//     cudaFree(buffers[inputIndex]);
+//     cudaFree(buffers[outputIndex]);
+// }
+
+
+
+auto rag_test()
+{
+
+    //==============加载模型========================
+    Logger logger;
+    const std::string engine_file_path = "model.trt"; // 你的引擎文件路径
+    std::ifstream file(engine_file_path, std::ios::binary | std::ios::ate);
+    if (!file.good()) {
+        std::cerr << "read engine file failed: " << engine_file_path << std::endl;
+        return -1;
+    }
+    size_t file_size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    std::vector<char> engine_data(file_size);
+    file.read(engine_data.data(), static_cast<long>(file_size));
+    file.close();
+
+    std::cout << "engine file size: " << file_size << std::endl;
+    nvinfer1::IRuntime* runtime = nvinfer1::createInferRuntime(logger);
+    if (!runtime) {
+        std::cerr << "create IRuntime failed" << std::endl;
+        return -1;
+    }
+    std::cout << "create IRuntime success" << std::endl;
+
+    auto engine = runtime->deserializeCudaEngine(engine_data.data(), file_size);
+    if (!engine) {
+        std::cerr << "blob to file failed" << std::endl;
+        delete runtime;
+        return -1;
+    }
+    std::cout << "blob to file success" << std::endl;
+    //=======================================
+
+
+
+    return 0;
+}
+int main()
+{
+    rag_test();
+    return  0;
+
 }
