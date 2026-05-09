@@ -51,11 +51,34 @@ int gdlz::trt::rag::Forward(const TrtEmbFramework* framework, TrtEmbCtx& ctx) {
     return framework->Forward(ctx);
 }
 
+int gdlz::trt::rag::ForwardAsync(const TrtEmbFramework* framework, TrtEmbCtx& ctx) {
+    return framework->ForwardAsync(ctx);
+}
+
+int gdlz::trt::rag::Synchronize(const TrtEmbCtx& ctx) {
+    return TrtEmbFramework::Synchronize(ctx);
+}
+
 int gdlz::trt::rag::GetEmbedding(
     const TrtEmbFramework* framework,
     const TrtEmbCtx& ctx, TrtEmbData& embedding, const char* name)
 {
     return framework->GetEmbedding(ctx,embedding,name);
+}
+
+int gdlz::trt::rag::GetPooledEmbedding(
+    const TrtEmbFramework* framework,
+    const TrtEmbCtx& ctx,
+    TrtEmbData& embedding,
+    const char* hidden_state_name,
+    const char* attention_mask_name
+){
+    return framework->GetPooledEmbedding(ctx,embedding,hidden_state_name,attention_mask_name);
+}
+
+int gdlz::trt::rag::ClearBindings(TrtEmbCtx& ctx)
+{
+    return TrtEmbFramework::ClearBindings(ctx);
 }
 
 

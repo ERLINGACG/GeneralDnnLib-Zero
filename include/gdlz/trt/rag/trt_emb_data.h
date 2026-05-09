@@ -23,11 +23,22 @@ namespace gdlz::trt::rag {
     struct TrtEmbCtx {
 
         std::unique_ptr<nvinfer1::IExecutionContext> context;
+        cudaStream_t* stream;
         std::unique_ptr<std::map<std::string, void*>> bindings;
         void reset(){
 
+            if (stream != nullptr) {
+                cudaStreamDestroy(*stream);
+                delete stream;
+                stream = nullptr;
+            }
+
             if (context!=nullptr){
                 context.reset();
+            }
+
+            if (bindings != nullptr) {
+                bindings->clear();
             }
         }
     };

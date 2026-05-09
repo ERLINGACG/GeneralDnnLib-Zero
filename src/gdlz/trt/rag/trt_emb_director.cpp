@@ -65,7 +65,7 @@ gdlz::trt::rag::TrtEmbDirector& gdlz::trt::rag::TrtEmbDirector::Handle(
                 dylog::DynamicLogger().info("tensorName: {} is float32", tensorName);
             }
 
-            engine.engine_info.push_back({tensorName, shapeStr});
+            engine.engine_info.emplace_back(tensorName, shapeStr);
         }
     }else{
         dylog::DynamicLogger().error("TrtEmbDirector::Handle failed");

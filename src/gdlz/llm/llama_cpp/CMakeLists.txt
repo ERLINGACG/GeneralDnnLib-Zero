@@ -10,7 +10,7 @@ set(GDLZ_INCLUDE_PATH
         ${CMAKE_SOURCE_DIR}/include
         ${CLIB_ROOT}/log/dylog/include
         ${CLIB_ROOT}/opencv/include
-        ${CLIB_ROOT}/json/nlohmann/include
+        ${CLIB_ROOT}/json/nlohmann
         ${CLIB_ROOT}/llama.cpp/include
 )
 set(GDLZ_LIBS_NAME

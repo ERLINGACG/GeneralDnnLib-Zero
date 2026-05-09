@@ -23,13 +23,24 @@ namespace gdlz::trt::rag {
           const void* input, int len, int isMask
       );
 
-      GDLZ_CORE_API int Forward(const TrtEmbFramework* framework, TrtEmbCtx& ctx);
+      GDLZ_CORE_API int ForwardAsync(const TrtEmbFramework* framework, TrtEmbCtx& ctx);
+      GDLZ_CORE_API int Forward     (const TrtEmbFramework* framework, TrtEmbCtx& ctx);
+      GDLZ_CORE_API int Synchronize(const TrtEmbCtx& ctx);
+
 
       GDLZ_CORE_API int GetEmbedding(
           const TrtEmbFramework* framework,
           const TrtEmbCtx& ctx, TrtEmbData& embedding,
           const char* name
       );
+      GDLZ_CORE_API int GetPooledEmbedding(
+          const TrtEmbFramework* framework,
+          const TrtEmbCtx& ctx, TrtEmbData& embedding,
+          const char* hidden_state_name,
+          const char* attention_mask_name
+      );
+
+      GDLZ_CORE_API int ClearBindings(TrtEmbCtx& ctx);
 
 
 }

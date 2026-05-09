@@ -5,6 +5,7 @@
 #ifndef GENERALDNNLIB_ZERO_TRT_EMB_FRAMEWORK_H
 #define GENERALDNNLIB_ZERO_TRT_EMB_FRAMEWORK_H
 #include <cuda_fp16.h>
+#include <cuda_runtime.h>
 #include <unordered_map>
 #include <vector>
 
@@ -35,8 +36,6 @@ namespace gdlz::trt::rag{
             TrtEmbFramework() = default;
             ~TrtEmbFramework() = default;
 
-
-
             void  ResourceDirector(
                 TrtEmbDirector& director,
                 const char* config_path
@@ -57,11 +56,23 @@ namespace gdlz::trt::rag{
                     const int* input, int len
             );
 
+            static int ClearBindings(TrtEmbCtx& ctx);
+
             int GetDims(TrtEmbCtx& ctx,const char* name) const;
+            int ForwardAsync(TrtEmbCtx& ctx) const;
             int Forward(TrtEmbCtx& ctx) const;
+
+            static int Synchronize(const TrtEmbCtx& ctx);
+
             int GetEmbedding(const TrtEmbCtx& ctx,
                             TrtEmbData& embedding,
                             const char* name
+            ) const;
+
+            int GetPooledEmbedding(const TrtEmbCtx& ctx,
+                                   TrtEmbData& embedding,
+                                   const char* hidden_state_name,
+                                   const char* attention_mask_name
             ) const;
 
 
@@ -73,6 +84,8 @@ namespace gdlz::trt::rag{
                    ResourceDirector(director,config_path);
                     return this;
             };
+
+            void DestroyRt();
     };
 
 }

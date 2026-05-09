@@ -87,48 +87,6 @@ function(task_lib
 
 endfunction()
 
-set(INCLUDE_PATH
-        ./include
-        ${CLIB_ROOT}/log/dylog/include
-        ${CLIB_ROOT}/opencv/include
-        ${CLIB_ROOT}/json/nlohmann
-)
-set(LIBRARY_PATH ${CLIB_ROOT}/opencv/lib cmake-build-release-visual-studio/Release )
-set(LIBNAME opencv_world4120)
-set(FLIES
-        src/main.cpp
-)
-
-
-task_exe(
-        GeneralDnnLib_Zero            # TARGET_NAME
-        "${FLIES}"                    # FILES_LIST（单文件/多文件都支持）
-        "${INCLUDE_PATH}"             # INCLUDE_PATHS（多值）
-        "${LIBRARY_PATH}"             # LIBRARY_PATHS（多值）
-        "${LIBNAME}"                  # LIBS（多值）
-        "test1"                        # OUTPUT_DIR（可选）
-)
-
-set(TEST_FLIES
-        src/gdlz/cv/framework/yolo/yolo_framework.cpp
-        src/gdlz/cv/framework/yolo/yolo_resources_director.cpp
-        src/gdlz/cv/framework/sr/sr_framework.cpp
-        src/gdlz/cv/framework/sr/sr_resources_director.cpp
-#        src/test/framework/yoloTest.cpp
-)
-
-
-
-task_exe(
-        GeneralDnnLib_Yolo_Framework_Test            # TARGET_NAME
-        "${TEST_FLIES}"                    # FILES_LIST（单文件/多文件都支持）
-        "${INCLUDE_PATH}"             # INCLUDE_PATHS（多值）
-        "${LIBRARY_PATH}"             # LIBRARY_PATHS（多值）
-        "${LIBNAME}"                  # LIBS（多值）
-        "gdlz_test"                        # OUTPUT_DIR（可选）
-)
-
-
 
 function(task_GeneralDnnLib_Framework_Lib)
     set(CPP_FILES
@@ -551,8 +509,8 @@ task_invoke_test()
 task_onnx_test()
 task_torch_test()
 #task_tensorf_test() //已否决
-task_GeneralDnnLib_Framework_Lib()
-task_GeneralDnnLib_Framework_LLM_GGUF_Lib()
+#task_GeneralDnnLib_Framework_Lib()
+#task_GeneralDnnLib_Framework_LLM_GGUF_Lib()
 
 task_StableDiffusion_test()
 task_llm_test()
@@ -562,3 +520,10 @@ task_trt_test()
 add_subdirectory(./src/gdlz/llm/llama_cpp)
 add_subdirectory(./src/gdlz/plugin)
 add_subdirectory(./src/gdlz/trt)
+add_subdirectory(./src/gdlz/ort)
+
+
+set(BOOL_TEST OFF CACHE BOOL "Enable the experimental feature")
+if (BOOL_TEST)
+  MESSAGE("BOOL_TEST is ON")
+endif ()
