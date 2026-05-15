@@ -25,7 +25,9 @@ set(I_ORT_LIBS_NAME
 #        onnxruntime_providers_cuda
 )
 
-add_library(GeneralDnnLib_Zero_ort_core_framework SHARED ${I_CPP_FILES})
-target_include_directories(GeneralDnnLib_Zero_ort_core_framework PRIVATE ${I_ORT_INCLUDE})
-target_link_directories(GeneralDnnLib_Zero_ort_core_framework PRIVATE ${I_ORT_LIBS_PATH})
-target_link_libraries(GeneralDnnLib_Zero_ort_core_framework PRIVATE ${I_ORT_LIBS_NAME})
+add_library(GeneralDnnLib_Zero_ort_core SHARED ${I_CPP_FILES})
+target_include_directories(GeneralDnnLib_Zero_ort_core PRIVATE ${I_ORT_INCLUDE})
+target_link_directories(GeneralDnnLib_Zero_ort_core PUBLIC ${I_ORT_LIBS_PATH})
+target_link_libraries(GeneralDnnLib_Zero_ort_core PUBLIC ${I_ORT_LIBS_NAME})
+
+add_subdirectory(llm)

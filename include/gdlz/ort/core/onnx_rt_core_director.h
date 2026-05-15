@@ -11,7 +11,7 @@ namespace gdlz::ort::core{
 
     public:
         ~OnnxRtCoreDirector() = default;
-        static void Handle(data::OnnxRTEngine& engine, const char* config_path);
+        static void Handle(data::OnnxRTEngineInfo& engine, const char* config_path);
     };
 }
 #endif //GENERALDNNLIB_ZERO_ONNX_RT_CORE_DIRECTOR_H

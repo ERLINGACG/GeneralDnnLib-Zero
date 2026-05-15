@@ -10,9 +10,9 @@
 namespace gdlz::ort::core{
 
     GDLZ_CORE_API OnnxRtFramework* CreateOnnxRtFramework(const char* config_path);
-    GDLZ_CORE_API int CreateCtx(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx);
-    GDLZ_CORE_API void GetEngineInfo(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx);
-    GDLZ_CORE_API void Run(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx);
-    GDLZ_CORE_API int RunExam(const OnnxRtFramework* framework,void* token, int len,data::OnnxRTCtx& ctx);
+    GDLZ_CORE_API int CreateEngine(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx);
+    GDLZ_CORE_API void GetEngineInfo(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx);
+    GDLZ_CORE_API void Run(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx);
+    GDLZ_CORE_API int RunExam(const OnnxRtFramework* framework,void* token, int len,data::OnnxRTEngine& ctx);
 }
 #endif //GENERALDNNLIB_ZERO_ONNX_RT_CORE_EXPORT_H

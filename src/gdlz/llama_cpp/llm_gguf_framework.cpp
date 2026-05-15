@@ -1,7 +1,7 @@
 //
 // Created by HP on 2026/1/27.
 //
-#include "gdlz//llm/framework/llm_gguf_framework.h"
+#include "gdlz//llama/framework/llm_gguf_framework.h"
 
 #include <iostream>
 #include <unordered_set>
@@ -305,6 +305,7 @@ void LLm_GGuf_Framework::InitEmbeddings(
     );
     batch.batch = std::make_unique<llama_batch>(llama_batch_get_one(tokens, len));
     batch.eos    = llama_vocab_eos(resource.vocab);
+    context.keep_recent_tokens(0,2048);
 
 }
 

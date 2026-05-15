@@ -10,20 +10,23 @@ namespace gdlz::ort::core{
 
     class OnnxRtFramework{
 
-        data::OnnxRTEngine engine;
+        data::OnnxRTEngineInfo engine_info;
       public:
         OnnxRtFramework() = default;
         ~OnnxRtFramework() = default;
 
         OnnxRtFramework* ResourceDirector(const char* config_path);
 
-        int     CreateCtx(data::OnnxRTCtx& ctx) const;
-        static void    GetEngineInfo(data::OnnxRTCtx& ctx);
-        void   run(data::OnnxRTCtx& ctx) const;
-        int    run_token(void* tokens,int len,data::OnnxRTCtx& ctx,data::OnnxExamKV& kv)  const;
-        void   run_batch_init(void* tokens,int len,data::OnnxRTCtx& ctx,data::OnnxExamKV& kv) const;
-        void   run_token_one_step(data::OnnxRTCtx& ctx,data::OnnxExamKV& kv)  const;
+        int     CreateEngine(data::OnnxRTEngine& engine) const;
+        static void    GetEngineInfo(data::OnnxRTEngine& ctx);
+        void   run(data::OnnxRTEngine& ctx) const;
+        void   run_batch_init(void* tokens,int len,data::OnnxRTEngine& ctx,data::OnnxExamKV& kv) const;
+        void   run_token_one_step(data::OnnxRTEngine& ctx,data::OnnxExamKV& kv)  const;
 
+
+        data::OnnxRTEngineInfo& GetEngineInfo_() {
+            return engine_info;
+        }
 
     };
 }

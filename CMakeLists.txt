@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.31)
 project(GeneralDnnLib_Zero)
 
 set(CMAKE_CXX_STANDARD 20)
+set(BUILD_TO_TEST OFF CACHE BOOL "Build the test")
 if(MSVC)
     enable_language(CUDA)
     set(CMAKE_CUDA_ARCHITECTURES "86")  # 对应3050TI的Ampere架构
@@ -16,6 +17,40 @@ endif()
 
 set(CLIB_ROOT "E:/ZeroPlan/C++/Clib")
 
+set(INSTALL_PATH CACHE PATH "Path to install directory")
+
+
+set(OpenCV_INCLUDE_PATH CACHE PATH "Path to OpenCV include directory")
+set(OpenCV_LIB_PATH     CACHE PATH "Path to OpenCV library directory")
+set(OpenCV_LIBS_NAME    CACHE STRING "OpenCV library name")
+
+set(Llama_CPP_INCLUDE_PATH CACHE PATH "Path to Llama.cpp include directory")
+set(Llama_CPP_LIB_PATH     CACHE PATH "Path to Llama.cpp library directory")
+set(Llama_CPP_LIBS_NAME    CACHE STRING "Llama.cpp library name")
+
+set(Nlohmann_JOSN_INCLUDE CACHE PATH "Path to Nlohmann JSON include directory")
+set(Dylog_INCLUDE CACHE PATH "Path to Dylog include directory")
+
+message("============Opencv Config=============")
+message("using OpenCV version 4.12.0")
+message("OpenCV_INCLUDE_PATH: ${OpenCV_INCLUDE_PATH}")
+message("OpenCV_LIB_PATH: ${OpenCV_LIB_PATH}")
+message("============Opencv Config=============")
+message("")
+message("============Llama.cpp Config=============")
+message("using Llama.cpp version 8210 (2cd20b72e)")
+message("Llama_CPP_INCLUDE_PATH: ${Llama_CPP_INCLUDE_PATH}")
+message("Llama_CPP_LIB_PATH: ${Llama_CPP_LIB_PATH}")
+message("============Llama.cpp Config=============")
+message("")
+message("============Nlohmann JSON Config=============")
+message("Nlohmann_JOSN_INCLUDE: ${Nlohmann_JOSN_INCLUDE}")
+message("============Nlohmann JSON Config=============")
+message("")
+message("============Dylog Config=============")
+message("Dylog_INCLUDE: ${Dylog_INCLUDE}")
+message("============Dylog Config=============")
+message("")
 
 function(set_include TARGET_NAME)
     target_include_directories(${TARGET_NAME} PRIVATE ${ARGN})
@@ -111,9 +146,9 @@ function(task_GeneralDnnLib_Framework_Lib)
             src/gdlz/cv/framework/sr/sr_framework.cpp
             src/gdlz/cv/framework/sr/sr_resources_director.cpp
 
-            src/gdlz/llm/llama_cpp/llm_gguf_resources_director.cpp
-            src/gdlz/llm/llama_cpp/llm_gguf_framework_export.cpp
-            src/gdlz/llm/llama_cpp/llm_gguf_framework.cpp
+            src/gdlz/llama_cpp/llm_gguf_resources_director.cpp
+            src/gdlz/llama_cpp/llm_gguf_framework_export.cpp
+            src/gdlz/llama_cpp/llm_gguf_framework.cpp
     )
     set(GDLZ_INCLUDE_PATH
             ./include
@@ -147,9 +182,9 @@ function(task_GeneralDnnLib_Framework_LLM_GGUF_Lib)
     set(CPP_FILES
 
 
-            src/gdlz/llm/llama_cpp/llm_gguf_resources_director.cpp
-            src/gdlz/llm/llama_cpp/llm_gguf_framework_export.cpp
-            src/gdlz/llm/llama_cpp/llm_gguf_framework.cpp
+            src/gdlz/llama_cpp/llm_gguf_resources_director.cpp
+            src/gdlz/llama_cpp/llm_gguf_framework_export.cpp
+            src/gdlz/llama_cpp/llm_gguf_framework.cpp
     )
     set(GDLZ_INCLUDE_PATH
             ./include
@@ -505,25 +540,26 @@ function(task_trt_test)
   )
 
 endfunction()
-task_invoke_test()
-task_onnx_test()
-task_torch_test()
+
 #task_tensorf_test() //已否决
 #task_GeneralDnnLib_Framework_Lib()
 #task_GeneralDnnLib_Framework_LLM_GGUF_Lib()
+if (BUILD_TO_TEST)
+    MESSAGE("BUILD_TO_TEST is ON")
+    task_invoke_test()
+    task_onnx_test()
+    task_torch_test()
+    task_StableDiffusion_test()
+    task_llm_test()
+    task_trt_test()
+endif ()
 
-task_StableDiffusion_test()
-task_llm_test()
-task_trt_test()
 
-
-add_subdirectory(./src/gdlz/llm/llama_cpp)
+add_subdirectory(src/gdlz/llama_cpp)
 add_subdirectory(./src/gdlz/plugin)
 add_subdirectory(./src/gdlz/trt)
 add_subdirectory(./src/gdlz/ort)
+add_subdirectory(./src/utils/sr)
 
 
-set(BOOL_TEST OFF CACHE BOOL "Enable the experimental feature")
-if (BOOL_TEST)
-  MESSAGE("BOOL_TEST is ON")
-endif ()
+

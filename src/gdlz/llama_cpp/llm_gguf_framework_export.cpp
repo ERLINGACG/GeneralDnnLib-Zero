@@ -1,7 +1,7 @@
 //
 // Created by HP on 2026/1/27.
 //
-#include "gdlz/llm/framework/llm_gguf_framework_export.h"
+#include "gdlz/llama/framework/llm_gguf_framework_export.h"
 
 #include <iostream>
 #include <ostream>
@@ -87,36 +87,3 @@ void gdlz::llm::gguf_export::GetEmbeddings(
 }
 
 
-
-// void gdlz::llm::gguf_export::Json_ExampleSend(const char* str)
-// {
-//         try {
-//                 std::cout << str<< std::endl;
-//                 auto json = nlohmann::json::parse(str);
-//                 std::cout << json.dump(4) << std::endl;
-//
-//         }catch (std::exception& e) {
-//                 std::cerr << e.what() << std::endl;
-//         }
-//
-// }
-// void gdlz::llm::gguf_export::SetSamplerRT(
-//         const gguf::LLm_GGuf_Framework* framework,
-//         const char* gbnf_str,
-//         const bool use_grammar,
-//         const int top_k,
-//         const float top_p,
-//         const float temp
-//         ) {
-//
-//         framework->SetSamplerRT(gbnf_str, use_grammar, top_k, top_p, temp);
-// }
-
-// void gdlz::llm::gguf_export::InitBatch(const gguf::LLm_GGuf_Framework* framework, const char* prompt,
-//         gguf::batch::LLM_GGUF_Batch& batch) {
-//         framework->InitBatch(prompt, batch);
-// }
-// void gdlz::llm::gguf_export::Reasoning(const gguf::LLm_GGuf_Framework* framework, gguf::batch::LLM_GGUF_Batch& batch,
-//         data::LLM_GGUF_Stream& stream) {
-//         framework->Reasoning(batch, stream);
-// }

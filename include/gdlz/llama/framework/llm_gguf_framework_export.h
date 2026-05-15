@@ -9,27 +9,9 @@
 namespace gdlz::llm::gguf_export
 {
     GDLZ_CORE_API gguf::LLm_GGuf_Framework* CreateLLm_GGuf_Framework(const char* conf_path);
+
     GDLZ_CORE_API void                      DestroyLLm_GGuf_Framework(gguf::LLm_GGuf_Framework* framework);
 
-    // GDLZ_CORE_API void                     SetSamplerRT(
-    //                                             const gguf::LLm_GGuf_Framework* framework,
-    //                                             const char* gbnf_str,
-    //                                             bool use_grammar,
-    //                                             int top_k,
-    //                                             float top_p,
-    //                                             float temp
-    //                                          );
-    //
-    // GDLZ_CORE_API void                     InitBatch(
-    //                                             const gguf::LLm_GGuf_Framework* framework,
-    //                                             const char* prompt,
-    //                                             gguf::batch::LLM_GGUF_Batch& batch
-    //                                          );
-    // GDLZ_CORE_API void                     Reasoning(
-    //                                             const gguf::LLm_GGuf_Framework* framework,
-    //                                             gguf::batch::LLM_GGUF_Batch& batch,
-    //                                             data::LLM_GGUF_Stream& stream
-    //                                          );
     GDLZ_CORE_API void                     Batch_Free(gguf::batch::LLM_GGUF_Batch& batch);
 
     GDLZ_CORE_API void                     Embedding_Free(data::LLM_GGUF_Embedding& embedding);

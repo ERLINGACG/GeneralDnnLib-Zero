@@ -8,7 +8,7 @@
 #include <dylog/logger.h>
 
 #include "nlohmann/json.hpp"
-void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngine& engine, const char* config_path)
+void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngineInfo& engine, const char* config_path)
 {
     using nlohmann::json;
 
@@ -21,14 +21,17 @@ void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngine& engine, con
         return;
     }*jsonfile >> j;
 
-
-    // std::string model_path = j["model_path"].get<std::string>();
-    // bool use_cuda = config["use_cuda"].get<bool>();
     engine.model_path = j["model_path"].get<std::string>();
-    if (j["use_cuda"].get<bool>())
-    {
+    engine.head_dim  =  j["head_dim"].get<int>();
+    engine.layers    =  j["layers"].get<int>();
+    engine.heads     =  j["heads"].get<int>();
+    if (j["use_cuda"].get<bool>()) {
+
         engine.use_cuda =true;
         dylog::DynamicLogger().setInvokeName("OnnxRtCoreDirector::Handle").info("OnnxRtCoreDirector::Handle, use_cuda: {}", engine.use_cuda);
+
+    }else {
+        engine.use_cuda =false;
     }
     engine.env=Ort::Env();
 }

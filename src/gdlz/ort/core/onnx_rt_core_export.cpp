@@ -10,21 +10,22 @@ gdlz::ort::core::OnnxRtFramework* gdlz::ort::core::CreateOnnxRtFramework(const c
     return (new OnnxRtFramework())->ResourceDirector(config_path);
 }
 
-int gdlz::ort::core::CreateCtx(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx)
+int gdlz::ort::core::CreateEngine(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx)
 {
-    return framework->CreateCtx(ctx);
+    return framework->CreateEngine(ctx);
 }
-void gdlz::ort::core::GetEngineInfo(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx)
+
+void gdlz::ort::core::GetEngineInfo(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx)
 {
     OnnxRtFramework::GetEngineInfo(ctx);
 }
 
-void  gdlz::ort::core::Run(const OnnxRtFramework* framework, data::OnnxRTCtx& ctx)
+void  gdlz::ort::core::Run(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx)
 {
     framework->run(ctx);
 }
 
-int gdlz::ort::core::RunExam(const OnnxRtFramework* framework, void* token, int len, data::OnnxRTCtx& ctx)
+int gdlz::ort::core::RunExam(const OnnxRtFramework* framework, void* token, int len, data::OnnxRTEngine& ctx)
 {
     //
     auto ikv=data::OnnxExamKV();

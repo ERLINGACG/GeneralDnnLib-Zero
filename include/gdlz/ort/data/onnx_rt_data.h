@@ -7,18 +7,27 @@
 #include <onnxruntime_cxx_api.h>
 
 namespace gdlz::ort::data{
-    struct OnnxRTEngine {
+    struct OnnxRTEngineInfo {
+
         Ort::Env env;
         std::string model_path;
         bool use_cuda;
 
+        int32_t heads;
+        int32_t head_dim;
+        int32_t layers;
+
     };
 
-    struct OnnxRTCtx {
+    struct OnnxRTEngine {
+
         std::unique_ptr<Ort::SessionOptions> sessionOptions;
         std::unique_ptr<Ort::Session> session;
-        
         std::unique_ptr<OrtCUDAProviderOptions> cudaProviderOptions;
+
+        std::unique_ptr<std::vector<std::string>> input_name_ptr;
+        std::unique_ptr<std::vector<std::string>> output_name_ptr;
+
     };
 
 

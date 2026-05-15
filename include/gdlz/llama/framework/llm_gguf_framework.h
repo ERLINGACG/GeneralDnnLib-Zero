@@ -8,8 +8,8 @@
 
 #include "llm_gguf_resources_director.h"
 #include "gdlz/export.h"
-#include "gdlz/llm/data/llm_gguf_batch.h"
-#include "gdlz/llm/data/llm_gguf_stream.h"
+#include "gdlz/llama/data/llm_gguf_batch.h"
+#include "gdlz/llama/data/llm_gguf_stream.h"
 
 namespace  gdlz::llm::gguf
 {

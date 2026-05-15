@@ -4,6 +4,7 @@
 
 #ifndef GENERALDNNLIB_ZERO_LLM_GGUF_BATCH_H
 #define GENERALDNNLIB_ZERO_LLM_GGUF_BATCH_H
+#include <iostream>
 #include <llama.h>
 
 namespace gdlz::llm::gguf::batch
@@ -33,13 +34,14 @@ namespace gdlz::llm::gguf::batch
             }
         }
 
-        static void keep_recent_tokens(llama_context* ctx, int seq_id, int32_t keep_tokens) {
-            llama_memory_t mem = llama_get_memory(ctx);
+        void keep_recent_tokens(int seq_id, int32_t keep_tokens) const {
+            llama_memory_t mem = llama_get_memory(context);
             llama_pos pos_max = llama_memory_seq_pos_max(mem, seq_id);
+            std::cout<<"pos_max: "<<pos_max<<" keep_tokens: "<<keep_tokens<<std::endl;
             if (pos_max <= keep_tokens) return;  // 无需清理
 
             llama_pos delete_until = pos_max - keep_tokens;
-            llama_memory_seq_rm(mem, seq_id, -1, delete_until);  // 删除从开头到 delete_until 之前的所有缓存
+            llama_memory_seq_rm(mem, seq_id, 0, delete_until);  // 删除从开头到 delete_until 之前的所有缓存
         }
 
         ~LLM_GGUF_Context(){
