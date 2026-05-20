@@ -4,6 +4,8 @@
 
 #ifndef GENERALDNNLIB_ZERO_ONNX_RT_LLM_FRAMEWORK_H
 #define GENERALDNNLIB_ZERO_ONNX_RT_LLM_FRAMEWORK_H
+#include <random>
+
 #include "onnx_rt_llm_data.h"
 #include "gdlz/ort/data/onnx_rt_data.h"
 #include "gdlz/export.h"
@@ -11,44 +13,52 @@
 
 namespace gdlz::ort::llm {
 
-    class OnnxRtLLmSampler {
-        public:
-            OnnxRtLLmSampler() = default;
-            ~OnnxRtLLmSampler() = default;
-    };
-
-
     class GDLZ_CPP_API  OnnxRtLLmFramework {
 
-        public:
-            OnnxRtLLmFramework() = default;
+        data::OnnxRtLLmEngine engine;
+        ort::data::OnnxRTEngineInfo engine_info;
+        Ort::MemoryInfo mem_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+    public:
+
+            OnnxRtLLmFramework(const char* config_path);
             ~OnnxRtLLmFramework() = default;
 
-            static int GetLayerNames(
-                ort::data::OnnxRTEngine& engine,
+            void GetLayers();
+
+            static int InitSampler(
+                sampler::OnnxRtLLmParam& param,
                 data::OnnxRtLLmCtx& ctx
             );
 
-            static int CreateLLmEngine(
-                data::OnnxRtLLmEngine& LlmEngine,
-                ort::data::OnnxRTEngine& CoreEngine,
-                const ort::data::OnnxRTEngineInfo& engine_info
-            );
+            int SetInput(
+                ort::data::OnnxRtShape& shape,
+                ort::data::OnnxRtInput& input
+            ) const;
 
 
 
-            static int InitBatch(
-                data::OnnxRtLLmEngine& engine,
+            int Prefill(
                 data::OnnxRtLLmCtx& ctx,
                 data::OnnxRtLLmKv& kv,
-                void* tokens,int len
-            );
+                const ort::data::OnnxRtInput& input
+            ) const;
 
-            static int GenerateToken(
-                data::OnnxRtLLmEngine& engine,
+            int Decode(
+                data::OnnxRtLLmCtx& ctx,
+                data::OnnxRtLLmKv& kv,
+                ort::data::OnnxRtInput& input
+            ) const;
+
+            int InitBatchForTokenIds(
+                data::OnnxRtLLmCtx& ctx,
+                data::OnnxRtLLmKv& kv,
+                void* tokens,int64_t len
+            ) const;
+
+            int GenerateToken(
                 data::OnnxRtLLmCtx& ctx,
                 data::OnnxRtLLmKv& kv
-            );
+            ) const;
 
     };
 }
