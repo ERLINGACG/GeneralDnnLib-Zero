@@ -24,16 +24,21 @@ namespace gdlz::ort::data{
         }
     };
 
-    struct OnnxRtShape{
-        std::unique_ptr<char[]>     name_ptr;
-        std::unique_ptr<int64_t[]>  shape_ptr;
-        std::unique_ptr<char[]>     data_ptr;
-        int64_t shape_size;
-        int64_t data_size;
-        int32_t data_type;
-
-        ~OnnxRtShape()=default;
+    struct OnnxRtValue
+    {
+        std::unique_ptr<Ort::Value> value_ptr;
     };
+
+    // struct OnnxRtShape{
+    //     std::unique_ptr<char[]>     name_ptr;
+    //     std::unique_ptr<int64_t[]>  shape_ptr;
+    //     std::unique_ptr<char[]>     data_ptr;
+    //     int64_t shape_size;
+    //     int64_t data_size;
+    //     int32_t data_type;
+    //
+    //     ~OnnxRtShape()=default;
+    // };
 
 
 

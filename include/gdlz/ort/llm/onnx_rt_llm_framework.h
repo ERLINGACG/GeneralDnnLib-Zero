@@ -18,36 +18,42 @@ namespace gdlz::ort::llm {
         data::OnnxRtLLmEngine engine;
         ort::data::OnnxRTEngineInfo engine_info;
         Ort::MemoryInfo mem_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
+
     public:
 
             OnnxRtLLmFramework(const char* config_path);
             ~OnnxRtLLmFramework() = default;
 
-            void GetLayers();
+            void GetLayerInfo();
+
+            int GetHeads() const{
+                return engine.heads;
+            }
+
+            int GetLayers() const{
+                return engine.layers;
+            }
+
+            int GetHeadDim() const{
+                return engine.head_dim;
+            }
 
             static int InitSampler(
                 sampler::OnnxRtLLmParam& param,
                 data::OnnxRtLLmCtx& ctx
             );
 
-            int SetInput(
-                ort::data::OnnxRtShape& shape,
-                ort::data::OnnxRtInput& input
-            ) const;
-
-
-
-            int Prefill(
+            int PrefillFor1DRoPE(
                 data::OnnxRtLLmCtx& ctx,
                 data::OnnxRtLLmKv& kv,
-                const ort::data::OnnxRtInput& input
+                void* tokens,int64_t len
             ) const;
 
-            int Decode(
+            int DecodeFor1DRoPE(
                 data::OnnxRtLLmCtx& ctx,
-                data::OnnxRtLLmKv& kv,
-                ort::data::OnnxRtInput& input
+                data::OnnxRtLLmKv& kv
             ) const;
+
 
             int InitBatchForTokenIds(
                 data::OnnxRtLLmCtx& ctx,

@@ -8,23 +8,20 @@
 #include <dylog/logger.h>
 
 #include "nlohmann/json.hpp"
-void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngineInfo& engine, const char* config_path)
+void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngineInfo& engine, const char* config_path,nlohmann::json& config)
 {
     using nlohmann::json;
 
     json j;
     const auto jsonfile = std::make_unique<std::ifstream>(config_path);
 
-    if (!jsonfile->is_open())
-    {
+    if (!jsonfile->is_open()) {
         std::cerr<<"Error opening file "<<config_path<<std::endl;
         return;
     }*jsonfile >> j;
+    config = j;
 
     engine.model_path = j["model_path"].get<std::string>();
-    engine.head_dim  =  j["head_dim"].get<int>();
-    engine.layers    =  j["layers"].get<int>();
-    engine.heads     =  j["heads"].get<int>();
     if (j["use_cuda"].get<bool>()) {
 
         engine.use_cuda =true;
@@ -33,5 +30,5 @@ void gdlz::ort::core::OnnxRtCoreDirector::Handle(data::OnnxRTEngineInfo& engine,
     }else {
         engine.use_cuda =false;
     }
-    engine.env=Ort::Env();
+    engine.env=Ort::Env(ORT_LOGGING_LEVEL_WARNING, "gdlz-ort");
 }

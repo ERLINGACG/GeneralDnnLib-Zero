@@ -5,6 +5,7 @@
 #include <chrono>
 #include <iostream>
 #include <memory>
+#include <onnxruntime_cxx_api.h>
 #include <ostream>
 #include <dylog/logger.h>
 #include <opencv2/core/hal/interface.h>
@@ -14,19 +15,24 @@
 
 gdlz::ort::core::OnnxRtFramework* gdlz::ort::core::OnnxRtFramework::ResourceDirector(const char* config_path)
 {
-    OnnxRtCoreDirector::Handle(engine_info, config_path);
+    auto config = nlohmann::json();
+    OnnxRtCoreDirector::Handle(engine_info, config_path, config);
     return this;
 }
 
 int gdlz::ort::core::OnnxRtFramework::CreateEngine(data::OnnxRTEngine& engine) const
 {
-    try
-    {
-        size_t len = mbstowcs(nullptr, engine_info.model_path.c_str(), 0);  // 鑾峰彇鎵€闇€瀹藉瓧绗﹂暱搴?
-        if (len == static_cast<size_t>(-1)) { /* 杞崲澶辫触 */ }
+    return CreateEngine(this->engine_info, engine);
+}
+
+int gdlz::ort::core::OnnxRtFramework::CreateEngine(const data::OnnxRTEngineInfo& engine_info,
+    data::OnnxRTEngine& engine)
+{
+     try {
+        size_t len = mbstowcs(nullptr, engine_info.model_path.c_str(), 0);
+        if (len == static_cast<size_t>(-1)) {}
         auto* w_str = static_cast<wchar_t*>(malloc((len + 1) * sizeof(wchar_t)));
         mbstowcs(w_str, engine_info.model_path.c_str(), len + 1);
-
         engine.sessionOptions = std::make_unique<Ort::SessionOptions>();
         engine.sessionOptions->SetIntraOpNumThreads(1);
         engine.sessionOptions->SetGraphOptimizationLevel(ORT_ENABLE_ALL);
@@ -66,17 +72,17 @@ int gdlz::ort::core::OnnxRtFramework::CreateEngine(data::OnnxRTEngine& engine) c
             }
         }
 
-        // engine.head_dim = engine_info.head_dim;
-        // engine.heads    = engine_info.heads;
-        // engine.layers   = engine_info.layers;
         dylog::DynamicLogger().setInvokeName("OnnxRtFramework::CreateCtxV1").info("OnnxRtFramework::CreateEngine success");
 
     }catch(std::exception& e) {
-        dylog::DynamicLogger().error("OnnxRtFramework::CreateEngine, error: {}", e.what());
+        dylog::DynamicLogger().
+                setInvokeName("OnnxRtFramework::CreateEngine").
+                error("OnnxRtFramework::CreateEngine, error: {}", e.what());
         return -1;
     }
     return 0;
 }
+
 
 void gdlz::ort::core::OnnxRtFramework::GetEngineInfo(data::OnnxRTEngine& ctx)
 {

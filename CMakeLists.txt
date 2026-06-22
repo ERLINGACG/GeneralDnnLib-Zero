@@ -28,6 +28,14 @@ set(Llama_CPP_INCLUDE_PATH CACHE PATH "Path to Llama.cpp include directory")
 set(Llama_CPP_LIB_PATH     CACHE PATH "Path to Llama.cpp library directory")
 set(Llama_CPP_LIBS_NAME    CACHE STRING "Llama.cpp library name")
 
+set(TensorRT_INCLUDE_PATH CACHE PATH "Path to TensorRT include directory")
+set(TensorRT_LIB_PATH     CACHE PATH "Path to TensorRT library directory")
+set(TensorRT_LIBS_NAME    CACHE STRING "TensorRT library name")
+
+set(CUDA_INCLUDE_PATH CACHE PATH "Path to CUDA include directory")
+set(CUDA_LIB_PATH     CACHE PATH "Path to CUDA library directory")
+
+
 set(Nlohmann_JOSN_INCLUDE CACHE PATH "Path to Nlohmann JSON include directory")
 set(Dylog_INCLUDE CACHE PATH "Path to Dylog include directory")
 
@@ -50,6 +58,16 @@ message("")
 message("============Dylog Config=============")
 message("Dylog_INCLUDE: ${Dylog_INCLUDE}")
 message("============Dylog Config=============")
+message("")
+message("============CUDA Config=============")
+message("CUDA_INCLUDE_PATH: ${CUDA_INCLUDE_PATH}")
+message("CUDA_LIB_PATH: ${CUDA_LIB_PATH}")
+message("============CUDA Config=============")
+message("")
+message("============TensorRT Config=============")
+message("TensorRT_INCLUDE_PATH: ${TensorRT_INCLUDE_PATH}")
+message("TensorRT_LIB_PATH: ${TensorRT_LIB_PATH}")
+message("============TensorRT Config=============")
 message("")
 
 function(set_include TARGET_NAME)
@@ -541,7 +559,7 @@ function(task_trt_test)
 
 endfunction()
 
-#task_tensorf_test() //已否决
+#task_tensorf_test()
 #task_GeneralDnnLib_Framework_Lib()
 #task_GeneralDnnLib_Framework_LLM_GGUF_Lib()
 if (BUILD_TO_TEST)
@@ -560,6 +578,7 @@ add_subdirectory(./src/gdlz/plugin)
 add_subdirectory(./src/gdlz/trt)
 add_subdirectory(./src/gdlz/ort)
 add_subdirectory(./src/utils/sr)
+
 
 
 

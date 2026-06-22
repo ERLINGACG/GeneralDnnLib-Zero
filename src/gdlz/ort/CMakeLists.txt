@@ -31,3 +31,4 @@ target_link_directories(GeneralDnnLib_Zero_ort_core PUBLIC ${I_ORT_LIBS_PATH})
 target_link_libraries(GeneralDnnLib_Zero_ort_core PUBLIC ${I_ORT_LIBS_NAME})
 
 add_subdirectory(llm)
+add_subdirectory(emd)

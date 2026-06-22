@@ -17,8 +17,10 @@ int gdlz::ort::core::CreateEngine(const OnnxRtFramework* framework, data::OnnxRT
 
 void gdlz::ort::core::GetEngineInfo(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx)
 {
-    OnnxRtFramework::GetEngineInfo(ctx);
+    framework->GetEngineInfo(ctx);
 }
+
+
 
 void  gdlz::ort::core::Run(const OnnxRtFramework* framework, data::OnnxRTEngine& ctx)
 {
@@ -34,10 +36,5 @@ int gdlz::ort::core::RunExam(const OnnxRtFramework* framework, void* token, int 
         framework->run_token_one_step(ctx, ikv);
     }
 
-    // int64_t token_0[1] = {first_token_ret};
-    // for (int i=1; i<10; i++){
-    //   int res = framework->run_token(token_0, 1, ctx);
-    //   token_0[0] = res;
-    // }
     return 0;
 }

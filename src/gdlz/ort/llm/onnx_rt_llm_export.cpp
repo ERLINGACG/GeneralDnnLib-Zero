@@ -5,14 +5,12 @@
 
 #include <iostream>
 
-#include "gdlz/ort/core/onnx_rt_framework.h"
+#include "gdlz/except_utils.h"
 #include "gdlz/ort/llm/onnx_rt_llm_data.h"
 #include "gdlz/ort/llm/onnx_rt_llm_framework.h"
 
 void gdlz::ort::llm::GetCtxSize() {
     std::cout << sizeof(data::OnnxRtLLmCtx) << std::endl;
-    std::cout << "offsetof(input_names_ptr) = "  << offsetof(data::OnnxRtLLmCtx, input_names_ptr) << std::endl;
-    std::cout << "offsetof(output_names_ptr) = " << offsetof(data::OnnxRtLLmCtx, output_names_ptr) << std::endl;
     std::cout << "offsetof(batch) = "            << offsetof(data::OnnxRtLLmCtx, batch) << std::endl;
     std::cout << "offsetof(token_pos) = "        << offsetof(data::OnnxRtLLmCtx, token_pos) << std::endl;
     std::cout << "offsetof(next_token_id) = "    << offsetof(data::OnnxRtLLmCtx, next_token_id) << std::endl;
@@ -32,28 +30,97 @@ void gdlz::ort::llm::GetKvSize(const data::OnnxRtLLmKv& kv)
     std::cout << "kv size = " << kv.kv->size() << std::endl;
 }
 
-void gdlz::ort::llm::GetLayerNames(ort::data::OnnxRTEngine& engine, data::OnnxRtLLmCtx& ctx)
+
+void gdlz::ort::llm::GetCtxInfo(const data::OnnxRtLLmCtx& ctx)
 {
-     OnnxRtLLmFramework::GetLayerNames(engine, ctx);
+    ctx.info();
 }
 
-void gdlz::ort::llm::CreateLLmEngine(data::OnnxRtLLmEngine& llm_engine, ort::data::OnnxRTEngine& core_engine,
-    core::OnnxRtFramework* framework)
+gdlz::ort::llm::OnnxRtLLmFramework* gdlz::ort::llm::CreateLLmFramework(const char* config_path) {
+
+    return new OnnxRtLLmFramework(config_path);
+}
+
+void gdlz::ort::llm::GetLLmEngineInfo(OnnxRtLLmFramework* framework)
 {
-    OnnxRtLLmFramework::CreateLLmEngine(llm_engine, core_engine, framework->GetEngineInfo_());
+    framework->GetLayerInfo();
+}
+
+int gdlz::ort::llm::GetHeads(OnnxRtLLmFramework* framework)
+{
+    return framework->GetHeads();
+}
+
+int gdlz::ort::llm::GetLayers(OnnxRtLLmFramework* framework)
+{
+    return framework->GetLayers();
+}
+
+int gdlz::ort::llm::GetHeadDim(OnnxRtLLmFramework* framework)
+{
+    return framework->GetHeadDim();
+}
+
+int gdlz::ort::llm::ResetCtx(data::OnnxRtLLmCtx& ctx)
+{
+    return gdlz::except::try_catch<>([&](){
+        ctx.reset();
+        return 0;
+    });
+}
+
+int gdlz::ort::llm::ResetKv(data::OnnxRtLLmKv& kv)
+{
+    return gdlz::except::try_catch<>([&]() {
+        kv.reset();
+        return 0;
+    });
 }
 
 
-
-void gdlz::ort::llm::InitBatch(data::OnnxRtLLmEngine& engine, data::OnnxRtLLmCtx& ctx,
-                               data::OnnxRtLLmKv& kv, void* tokens, int64_t len){
-
-    OnnxRtLLmFramework::InitBatch(engine, ctx, kv, tokens, len);
-
+int gdlz::ort::llm::InitSampler(sampler::OnnxRtLLmParam& param, data::OnnxRtLLmCtx& ctx)
+{
+   return  OnnxRtLLmFramework::InitSampler(param, ctx);
 }
 
-void gdlz::ort::llm::GenerateToken(data::OnnxRtLLmEngine& engine, data::OnnxRtLLmCtx& ctx,
+int gdlz::ort::llm::PrefillFor1DRoPE(const OnnxRtLLmFramework* framework, data::OnnxRtLLmCtx& ctx,
+    data::OnnxRtLLmKv& kv, void* tokens, int64_t len)
+{
+    return gdlz::except::try_catch<>([&](){
+
+            return framework->PrefillFor1DRoPE(ctx, kv, tokens, len);
+        }
+    );
+}
+
+int gdlz::ort::llm::DecodeFor1DRoPE(const OnnxRtLLmFramework* framework, data::OnnxRtLLmCtx& ctx,
     data::OnnxRtLLmKv& kv)
 {
-    OnnxRtLLmFramework::GenerateToken(engine, ctx, kv);
+    return gdlz::except::try_catch<>([&](){
+
+            return framework->DecodeFor1DRoPE(ctx, kv);
+        }
+    );
 }
+
+
+int gdlz::ort::llm::InitBatchForTokenIds(const OnnxRtLLmFramework* framework, data::OnnxRtLLmCtx& ctx,
+                                         data::OnnxRtLLmKv& kv, void* tokens, int64_t len)
+{
+    return gdlz::except::try_catch<>(
+            [&](){
+                return framework->InitBatchForTokenIds(ctx, kv, tokens, len);
+            }
+        );
+}
+
+int gdlz::ort::llm::GenerateToken(const OnnxRtLLmFramework* framework, data::OnnxRtLLmCtx& ctx,
+    data::OnnxRtLLmKv& kv) {
+    return gdlz::except::try_catch<>(
+        [&]() {
+            return framework->GenerateToken(ctx, kv);
+        }
+    );
+}
+
+
