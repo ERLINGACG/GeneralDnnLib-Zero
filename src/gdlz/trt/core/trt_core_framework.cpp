@@ -246,11 +246,11 @@ int gdlz::trt::core::TensorRTCoreFramework::BuildEngine(TensorRTCoreEngine& engi
     }
 
     std::string module_path=engine.env["model_path"].get<std::string>();
-    if(!engine.env.contains("engine_path")){
-        dylog.error("TensorRTCoreFramework::HotBuildEngine, env: engine_path is missing");
-        return -1;
-    }
-    dylog.debug("engine_path: {}", engine.env["engine_path"].get<std::string>().c_str());
+    // if(!engine.env.contains("engine_path")){
+    //     dylog.error("TensorRTCoreFramework::HotBuildEngine, env: engine_path is missing");
+    //     return -1;
+    // }
+    // dylog.debug("engine_path: {}", engine.env["engine_path"].get<std::string>().c_str());
 
     auto builder = std::unique_ptr<IBuilder>(createInferBuilder(engine.logger));
     if (!builder) {
@@ -312,6 +312,26 @@ int gdlz::trt::core::TensorRTCoreFramework::BuildEngine(TensorRTCoreEngine& engi
         dylog.error("buildSerializedNetwork failed");
         return -1;
     }
+
+    if (auto isSaveEngine = engine.env.contains("is_save") &&
+        engine.env["is_save"].get<bool>(); isSaveEngine==false){
+        return 0;
+    }
+    std::string engine_path;
+    if (engine.env.contains("engine_path")){
+        engine_path = engine.env["engine_path"].get<std::string>();
+    }
+    if (engine_path.empty()){
+        engine_path = module_path + ".engine";
+    }
+    std::ofstream engineFile(engine_path, std::ios::binary);
+    if (!engineFile) {
+        dylog.error("Cannot open engine file: {}", engine_path.c_str());
+        return -1;
+    }
+    engineFile.write(static_cast<const char*>(serializedEngine->data()), static_cast<int64_t>(serializedEngine->size()));
+    engineFile.close();
+    dylog.debug("save to {} success", engine_path.c_str());
     return 0;
 }
 
@@ -374,6 +394,20 @@ int gdlz::trt::core::TensorRTCoreFramework::CreateCtx(TensorRTCoreEngine& engine
         std::cerr<<e.what()<<std::endl;
         return code::operation::FAILURE;
     }
+    return code::operation::SUCCESS;
+}
+
+int gdlz::trt::core::TensorRTCoreFramework::SetLayerShape(
+    TensorRTCoreCtx& ctx,const char* name, const int64_t* shape, int64_t shape_size)
+{
+    if (name==nullptr) return code::operation::RT_FAILURE;
+    if (shape_size==0) return code::operation::RT_FAILURE;
+
+    auto dims=nvinfer1::Dims();
+    dims.nbDims=static_cast<int>(shape_size);
+    for (int i=0;i<shape_size;i++){dims.d[i]=static_cast<int>(shape[i]);}
+
+    ctx.context->setInputShape(name, dims);
     return code::operation::SUCCESS;
 }
 

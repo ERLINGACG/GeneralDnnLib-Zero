@@ -34,7 +34,7 @@ namespace gdlz::trt::core{
 
          static int CreateCtx(TensorRTCoreEngine& engine ,TensorRTCoreCtx& ctx);
 
-
+         static int SetLayerShape(TensorRTCoreCtx& ctx,const char* name,const int64_t* shape,int64_t shape_size);
 
          static int Forward(TensorRTCoreCtx& ctx);
 
@@ -54,6 +54,11 @@ namespace gdlz::trt::core{
          template<typename T>
          static int Forward(T& ctx){
              return Forward(ctx.getCoreCtx());
+         }
+
+         template<typename T>
+         static int SetLayerShape(T& ctx,const char* name,const int64_t* shape,int64_t shape_size){
+             return TensorRTCoreFramework::SetLayerShape(ctx.getCoreCtx(),name,shape,shape_size);
          }
 
          template<typename T>

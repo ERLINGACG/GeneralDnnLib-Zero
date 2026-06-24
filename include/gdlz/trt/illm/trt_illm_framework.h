@@ -21,11 +21,11 @@ namespace gdlz::trt::illm{
             int CreateEngine();
             int GetEngineInfo();
             int RegisterMapping(const char* past_kv,const char* present_kv);
-            int RegisterInput(const char* name,const char* type);
+            int RegisterInput (const char* name,const char* type);
+            int RegisterLogits(const char* name,const char* type);
             int CreateTensorRTIllmCtx(TensorRTIllmCtx& ctx);
 
             static int SetSample(TensorRTIllmCtx& ctx,sample::TensorRTIllmSampleParams& params);
-
 
             static int Forward(TensorRTIllmCtx& ctx);
 
@@ -39,7 +39,10 @@ namespace gdlz::trt::illm{
                 int64_t len
             );
             static int AutoPastKvCache(TensorRTIllmCtx& ctx,int64_t* d,int64_t d_len);
+            static int AutoPastKvCache(TensorRTIllmCtx& ctx,const char* name,int64_t* d,int64_t d_len,size_t shape_type);
+
             static int AutoPresentKvCache(TensorRTIllmCtx& ctx);
+            static int AutoPresentKvCache(TensorRTIllmCtx& ctx,const char* name,size_t shape_type);
             static int AutoLogits(TensorRTIllmCtx& ctx);
             static int PrefillDefault(TensorRTIllmCtx& ctx);
             static int DecodeDefault(TensorRTIllmCtx& ctx);

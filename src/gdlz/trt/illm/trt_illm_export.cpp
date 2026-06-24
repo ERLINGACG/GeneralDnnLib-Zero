@@ -51,6 +51,10 @@ int gdlz::trt::illm::RegisterInput(TensorRTIllmFramework* framework, const char*
     return framework->RegisterInput(name, type);
 }
 
+int gdlz::trt::illm::RegisterLogits(TensorRTIllmFramework* framework, const char* name, const char* type) {
+    return framework->RegisterLogits(name, type);
+}
+
 int gdlz::trt::illm::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids, int64_t len) {
     return TensorRTIllmFramework::AutoInputIds(ctx, input_ids, len);
 }
@@ -59,8 +63,19 @@ int gdlz::trt::illm::AutoPastKvCacheDefault(TensorRTIllmCtx& ctx, int64_t* d, in
     return TensorRTIllmFramework::AutoPastKvCache(ctx, d, d_len);
 }
 
+int gdlz::trt::illm::AutoPastKvCacheV2(TensorRTIllmCtx& ctx,
+    const char* name, int64_t* d, int64_t d_len,size_t shape_type
+    ) {
+    return TensorRTIllmFramework::AutoPastKvCache(ctx, name, d, d_len, shape_type);
+}
+
 int gdlz::trt::illm::AutoPresentKvCacheDefault(TensorRTIllmCtx& ctx){
     return TensorRTIllmFramework::AutoPresentKvCache(ctx);
+}
+
+int gdlz::trt::illm::AutoPresentKvCacheV2(TensorRTIllmCtx& ctx, const char* name, size_t shape_type)
+{
+    return TensorRTIllmFramework::AutoPresentKvCache(ctx, name, shape_type);
 }
 
 int gdlz::trt::illm::AutoLogits(TensorRTIllmCtx& ctx) {
