@@ -39,8 +39,7 @@ int TensorRTIllmFramework::CreateTensorRTIllmCtx(TensorRTIllmCtx& ctx) {
     return TensorRTCoreFramework::CreateCtx<TensorRTIllmEngine,TensorRTIllmCtx>(engine,ctx);
 }
 
-int TensorRTIllmFramework::SetSample(TensorRTIllmCtx& ctx,sample::TensorRTIllmSampleParams& params)
-{
+int TensorRTIllmFramework::SetSample(TensorRTIllmCtx& ctx,sample::TensorRTIllmSampleParams& params) {
     ctx.sample=std::make_unique<sample::TensorRTIllmSample>(params);
     if (ctx.sample==nullptr){
         return code::operation::FAILURE;
@@ -60,9 +59,7 @@ int TensorRTIllmFramework::GetEngineInfo(){
    return  TensorRTCoreFramework::GetEngineInfo(this->engine.engine);
 }
 
-int TensorRTIllmFramework::RegisterMapping(const char* past_kv, const char* present_kv)
-{
-
+int TensorRTIllmFramework::RegisterMapping(const char* past_kv, const char* present_kv){
     engine.kv_mapping.emplace_back(past_kv,present_kv);
     return code::operation::SUCCESS;
 }
@@ -72,52 +69,30 @@ int TensorRTIllmFramework::RegisterInput(const char* name, const char* type) {
     return code::operation::SUCCESS;
 }
 
-// int TensorRTIllmFramework::SetInputDims(TensorRTIllmCtx& ctx, core::TensorRtShape& shape){
-//     return TensorRTCoreFramework::SetInputDims<TensorRTIllmCtx>(ctx,shape);
-// }
-//
-// int TensorRTIllmFramework::BindShapeAddress(TensorRTIllmCtx& ctx, core::TensorRtShape& shape,core::cuda::TensorRTCudaAddress& data) {
-//
-//     return TensorRTCoreFramework::BindShapeAddress<TensorRTIllmCtx>(ctx,shape,data);
-// }
+int TensorRTIllmFramework::RegisterLogits(const char* name, const char* type) {
+    engine.input_inputs.emplace_back(name,type);
+    return code::operation::SUCCESS;
+}
 
 
-
-
-
-
-int TensorRTIllmFramework::Forward(TensorRTIllmCtx& ctx)
-{
+int TensorRTIllmFramework::Forward(TensorRTIllmCtx& ctx) {
     TensorRTCoreFramework::Forward<TensorRTIllmCtx>(ctx);
     return code::operation::SUCCESS;
 }
 
 
 
-
-
-int TensorRTIllmFramework::ClearKvCache(TensorRTIllmCtx& ctx)
-{
-
+int TensorRTIllmFramework::ClearKvCache(TensorRTIllmCtx& ctx){
     return code::operation::SUCCESS;
 }
 
-
-
-
-
-
-int TensorRTIllmFramework::GetKvCacheInfo(const TensorRTIllmCtx& ctx)
-{
+int TensorRTIllmFramework::GetKvCacheInfo(const TensorRTIllmCtx& ctx){
 
     return 0;
 }
 
-
-
 int TensorRTIllmFramework::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids,
-    int64_t len)
-{
+    int64_t len) {
     auto* input_ids_int64=static_cast<int64_t*>(input_ids);
     std::vector<int64_t> input_ids_vector(input_ids_int64,input_ids_int64+len);
     std::vector<int64_t> att_mask(len,1);
@@ -205,8 +180,20 @@ int TensorRTIllmFramework::AutoPastKvCache(TensorRTIllmCtx& ctx, int64_t* d, int
             ctx.core_ctx->context->setTensorAddress(past_kv.c_str(),kv_address);
         }
     }
-
     return code::operation::SUCCESS;
+}
+
+int TensorRTIllmFramework::AutoPastKvCache(TensorRTIllmCtx& ctx, const char* name, int64_t* d, int64_t d_len,size_t shape_type)
+{
+    TensorRTCoreFramework::SetLayerShape(ctx,name,d,d_len);
+    void* kv_address=nullptr;
+    std::vector<float> present_kv_vector(1,0.0f);
+    core::cuda::TensorRTCudaPost::PostCuda(
+        present_kv_vector.data(),1,
+        kv_address,*ctx.core_ctx->stream,static_cast<core::cuda::DataType>(shape_type)
+    );
+    ctx.core_ctx->context->setTensorAddress(name,kv_address);
+    return 0;
 }
 
 int TensorRTIllmFramework::AutoPresentKvCache(TensorRTIllmCtx& ctx)
@@ -227,6 +214,19 @@ int TensorRTIllmFramework::AutoPresentKvCache(TensorRTIllmCtx& ctx)
         );
         ctx.core_ctx->context->setTensorAddress(present_kv.c_str(),present_address);
     }
+    return code::operation::SUCCESS;
+}
+
+int TensorRTIllmFramework::AutoPresentKvCache(TensorRTIllmCtx& ctx, const char* name,size_t shape_type)
+{
+    auto dims=ctx.core_ctx->context->getTensorShape(name);
+    int64_t size=1;
+    for (int32_t i = 0; i < dims.nbDims; ++i){size*=dims.d[i];}
+    void* kv_address=nullptr;
+    core::cuda::TensorRTCudaMemory::Malloc(
+        size, kv_address, static_cast<core::cuda::DataType>(shape_type)
+    );
+    ctx.core_ctx->context->setTensorAddress(name,kv_address);
     return code::operation::SUCCESS;
 }
 
@@ -394,8 +394,8 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
             v_s
         );
         ctx.abs_token_pos+=dims.d[1];
-        std::cout<<"ctx.next_token="<<ctx.next_token<<std::endl;
-        std::cout<<"ctx.abs_token_pos="<<ctx.abs_token_pos<<std::endl;
+        // std::cout<<"ctx.next_token="<<ctx.next_token<<std::endl;
+        // std::cout<<"ctx.abs_token_pos="<<ctx.abs_token_pos<<std::endl;
     }
     return code::operation::SUCCESS;
 }

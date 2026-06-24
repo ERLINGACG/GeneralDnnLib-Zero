@@ -21,9 +21,12 @@ namespace gdlz::trt::illm{
 
 
     GDLZ_CORE_API int RegisterInput(TensorRTIllmFramework* framework,const char* name, const char* type);
+    GDLZ_CORE_API int RegisterLogits(TensorRTIllmFramework* framework,const char* name, const char* type);
     GDLZ_CORE_API int AutoInputIds(TensorRTIllmCtx& ctx,void* input_ids,int64_t len);
     GDLZ_CORE_API int AutoPastKvCacheDefault(TensorRTIllmCtx& ctx,int64_t* d,int64_t d_len);
+    GDLZ_CORE_API int AutoPastKvCacheV2(TensorRTIllmCtx& ctx,const char* name,int64_t* d,int64_t d_len,size_t shape_type);
     GDLZ_CORE_API int AutoPresentKvCacheDefault(TensorRTIllmCtx& ctx);
+    GDLZ_CORE_API int AutoPresentKvCacheV2(TensorRTIllmCtx& ctx,const char* name,size_t shape_type);
     GDLZ_CORE_API int AutoLogits(TensorRTIllmCtx& ctx);
     GDLZ_CORE_API int PrefillDefault(TensorRTIllmCtx& ctx);
     GDLZ_CORE_API int DecodeDefault(TensorRTIllmCtx& ctx);
