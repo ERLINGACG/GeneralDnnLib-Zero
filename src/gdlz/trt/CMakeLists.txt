@@ -22,11 +22,11 @@ set(I_TRT_INCLUDE
         ${Dylog_INCLUDE}
         ${TensorRT_INCLUDE_PATH}
         ${Nlohmann_JOSN_INCLUDE}
-        E:/VScode/CUDA/include
+        ${CUDA_INCLUDE_PATH}
 )
 set(I_TRT_LIBS_PATH
         ${TensorRT_LIB_PATH}
-        E:/VScode/CUDA/lib/x64
+        ${CUDA_LIB_PATH}
 )
 
 set(I_TRT_LIBS_NAME

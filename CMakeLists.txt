@@ -70,6 +70,11 @@ message("TensorRT_LIB_PATH: ${TensorRT_LIB_PATH}")
 message("============TensorRT Config=============")
 message("")
 
+message("============CUDA Config=============")
+message("CUDA_INCLUDE_PATH: ${CUDA_INCLUDE_PATH}")
+message("CUDA_LIB_PATH: ${CUDA_LIB_PATH}")
+message("")
+
 function(set_include TARGET_NAME)
     target_include_directories(${TARGET_NAME} PRIVATE ${ARGN})
 endfunction()
