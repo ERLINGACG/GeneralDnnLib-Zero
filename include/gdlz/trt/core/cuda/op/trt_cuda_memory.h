@@ -17,6 +17,7 @@ namespace gdlz::trt::core::cuda {
             static int Malloc(int64_t size, void*& address, DataType type);
             static int Free(TensorRTCudaAddress& data);
             static int Free(const void*& data);
+            static int Free(void*& data);
             static int Sync(TensorRTCoreCtx& core_ctx);
 
             template<typename T>

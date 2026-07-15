@@ -80,6 +80,18 @@ int TensorRTCudaGet::GetCudaINT64(TensorRTCudaData& data, TensorRTCudaAddress& a
     return GetCudaData(data,address,DataType::INT64);
 }
 
+int TensorRTCudaGet::GetCudaFLOAT32(TensorRTCudaData& data, const void* address, int64_t len, cudaStream_t* stream) {
+    if (address==nullptr){ return code::address::ADDRESS_NULL;}
+    if (data.data!=nullptr){
+
+        delete[] static_cast<float*>(data.data);  // 先转换，再删除
+        data.data=new float[len];
+
+    }else{  data.data=new float[len]; }
+    return GetCudaData(data,address,len,DataType::FLOAT32,stream);
+}
+
+
 int  gdlz::trt::core::cuda::GetCudaINT32 (TensorRTCudaData& data, TensorRTCudaAddress& address){
     return TensorRTCudaGet::GetCudaINT32(data, address);
 }

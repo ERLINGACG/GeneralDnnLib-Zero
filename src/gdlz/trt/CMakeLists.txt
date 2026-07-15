@@ -64,5 +64,6 @@ build_trt_core_lib(GeneralDnnLib_Zero_trt_core
         "${I_TRT_LIBS_PATH}"
         "${I_TRT_LIBS_NAME}")
 add_subdirectory(illm)
+add_subdirectory(cv)
 
 

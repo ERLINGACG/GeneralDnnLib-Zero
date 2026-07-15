@@ -5,6 +5,7 @@
 #ifndef GENERALDNNLIB_ZERO_TRT_ILLM_DATA_H
 #define GENERALDNNLIB_ZERO_TRT_ILLM_DATA_H
 #include "gdlz/trt/core/trt_core_data.h"
+#include "gdlz/trt/core/cuda/op/trt_cuda_memory.h"
 #include "sample/sp/trt_illm_sample.h"
 
 
@@ -30,7 +31,7 @@ namespace gdlz::trt::illm {
         std::unique_ptr<sample::TensorRTIllmSample> sample;
         std::unique_ptr<std::vector<std::pair<std::string,std::string>>> input_inputs;
         std::unique_ptr<std::vector<std::pair<std::string,std::string>>> kv_mapping;
-
+        std::unique_ptr<std::map<std::string,void*>> layers_address;
         // int64_t seq_len;
         // int64_t heads;
         // int64_t head_dim;
@@ -41,6 +42,7 @@ namespace gdlz::trt::illm {
         [[nodiscard]] auto& getCoreCtx() const{
             return *core_ctx;
         }
+
     };
 
 

@@ -246,6 +246,7 @@ int gdlz::trt::core::TensorRTCoreFramework::BuildEngine(TensorRTCoreEngine& engi
     }
 
     std::string module_path=engine.env["model_path"].get<std::string>();
+
     // if(!engine.env.contains("engine_path")){
     //     dylog.error("TensorRTCoreFramework::HotBuildEngine, env: engine_path is missing");
     //     return -1;
@@ -283,7 +284,13 @@ int gdlz::trt::core::TensorRTCoreFramework::BuildEngine(TensorRTCoreEngine& engi
     }
 
     config->setMemoryPoolLimit(MemoryPoolType::kWORKSPACE, 3ULL << 30);
-    config->setFlag(BuilderFlag::kFP16);
+    if (engine.env.contains("builder_flag")){
+        auto builder_flag = engine.env["builder_flag"].get<std::string>();
+        if( builder_flags.find(builder_flag)!=builder_flags.end()){
+             config->setFlag(builder_flags.at(builder_flag));
+        }
+        dylog.debug("set builder_flag: {}", builder_flag.c_str());
+    }
     auto profile = builder->createOptimizationProfile();
     if (!profile) {
         dylog.error("TensorRTCoreFramework::HotBuildEngine, createOptimizationProfile failed");

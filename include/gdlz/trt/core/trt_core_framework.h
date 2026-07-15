@@ -4,6 +4,7 @@
 
 #ifndef GENERALDNNLIB_ZERO_TRT_CORE_FRAMEWORK_H
 #define GENERALDNNLIB_ZERO_TRT_CORE_FRAMEWORK_H
+#include <NvInfer.h>
 #include <dylog/logger.h>
 
 #include "trt_core_data.h"
@@ -12,7 +13,9 @@
 namespace gdlz::trt::core{
 
 
-
+    static std::map<std::string, nvinfer1::BuilderFlag> builder_flags{
+            {"fp16",nvinfer1::BuilderFlag::kFP16},
+    };
 
     class GDLZ_CPP_API TensorRTCoreFramework {
 

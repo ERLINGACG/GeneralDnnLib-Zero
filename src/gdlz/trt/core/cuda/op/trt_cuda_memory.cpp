@@ -45,6 +45,15 @@ int gdlz::trt::core::cuda::TensorRTCudaMemory::Free(const void*& data) {
     return code::operation::SUCCESS;
 }
 
+int gdlz::trt::core::cuda::TensorRTCudaMemory::Free(void*& data)
+{
+    if (data!=nullptr){
+        cudaFree(data);
+        data=nullptr;
+    }
+    return code::operation::SUCCESS;
+}
+
 int gdlz::trt::core::cuda::TensorRTCudaMemory::Sync(TensorRTCoreCtx& core_ctx)
 {
     auto res=cudaStreamSynchronize(*core_ctx.stream);

@@ -17,6 +17,7 @@ namespace gdlz::trt::core::cuda
         static int GetCudaData (TensorRTCudaData& data, const void* address, int64_t len, DataType type, cudaStream_t* stream);
         static int GetCudaINT32(TensorRTCudaData& data,TensorRTCudaAddress& address);
         static int GetCudaINT64(TensorRTCudaData& data,TensorRTCudaAddress& address);
+        static int GetCudaFLOAT32(TensorRTCudaData& data,const void* address, int64_t len, cudaStream_t* stream);
 
     };
 

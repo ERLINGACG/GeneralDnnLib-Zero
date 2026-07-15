@@ -34,6 +34,7 @@ int TensorRTIllmFramework::CreateTensorRTIllmCtx(TensorRTIllmCtx& ctx) {
     cudaStreamCreate(ctx.core_ctx->stream);
     ctx.kv_mapping=std::make_unique<std::vector<std::pair<std::string,std::string>>>(engine.kv_mapping);
     ctx.input_inputs=std::make_unique<std::vector<std::pair<std::string,std::string>>>(engine.input_inputs);
+    ctx.layers_address=std::make_unique<std::map<std::string,void*>>();
     ctx.next_token=0;
     ctx.abs_token_pos=0;
     return TensorRTCoreFramework::CreateCtx<TensorRTIllmEngine,TensorRTIllmCtx>(engine,ctx);
@@ -93,6 +94,7 @@ int TensorRTIllmFramework::GetKvCacheInfo(const TensorRTIllmCtx& ctx){
 
 int TensorRTIllmFramework::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids,
     int64_t len) {
+
     auto* input_ids_int64=static_cast<int64_t*>(input_ids);
     std::vector<int64_t> input_ids_vector(input_ids_int64,input_ids_int64+len);
     std::vector<int64_t> att_mask(len,1);
@@ -124,6 +126,13 @@ int TensorRTIllmFramework::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids,
                     static_cast<int64_t>(input_ids_vector.size())}
                 );
             ctx.core_ctx->context->setTensorAddress(name.c_str(),input_address);
+
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,input_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=input_address;
+            }
         }
 
         if (type=="MSK"){
@@ -133,6 +142,12 @@ int TensorRTIllmFramework::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids,
                     static_cast<int64_t>(att_mask.size())}
                 );
             ctx.core_ctx->context->setTensorAddress(name.c_str(),attention_mask_address);
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,attention_mask_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=attention_mask_address;
+            }
         }
 
         if (type=="POS") {
@@ -155,7 +170,12 @@ int TensorRTIllmFramework::AutoInputIds(TensorRTIllmCtx& ctx, void* input_ids,
                     static_cast<int64_t>(pos.size())
                 }
             );
-
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,pos_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=pos_address;
+            }
         }
     }
 
@@ -170,7 +190,6 @@ int TensorRTIllmFramework::AutoPastKvCache(TensorRTIllmCtx& ctx, int64_t* d, int
 
     for (auto& past_kv : *ctx.kv_mapping | std::views::keys){
         ctx.core_ctx->context->setInputShape(past_kv.c_str(),dims);
-        if (size==0){
             void* kv_address=nullptr;
             std::vector<float> present_kv_vector(1,0.0f);
             core::cuda::TensorRTCudaPost::PostCuda(
@@ -178,7 +197,7 @@ int TensorRTIllmFramework::AutoPastKvCache(TensorRTIllmCtx& ctx, int64_t* d, int
                 kv_address,*ctx.core_ctx->stream,core::cuda::DataType::FLOAT32
             );
             ctx.core_ctx->context->setTensorAddress(past_kv.c_str(),kv_address);
-        }
+            ctx.layers_address->emplace(past_kv,kv_address);
     }
     return code::operation::SUCCESS;
 }
@@ -193,7 +212,13 @@ int TensorRTIllmFramework::AutoPastKvCache(TensorRTIllmCtx& ctx, const char* nam
         kv_address,*ctx.core_ctx->stream,static_cast<core::cuda::DataType>(shape_type)
     );
     ctx.core_ctx->context->setTensorAddress(name,kv_address);
-    return 0;
+    if (!ctx.layers_address->contains(name)){
+        ctx.layers_address->emplace(name,kv_address);
+    }else{
+        core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+        (*ctx.layers_address)[name]=kv_address;
+    }
+    return code::operation::SUCCESS;
 }
 
 int TensorRTIllmFramework::AutoPresentKvCache(TensorRTIllmCtx& ctx)
@@ -248,6 +273,12 @@ int TensorRTIllmFramework::AutoLogits(TensorRTIllmCtx& ctx)
                 size, logits_address, core::cuda::DataType::FLOAT32
             );
             ctx.core_ctx->context->setTensorAddress(name.c_str(),logits_address);
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,logits_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=logits_address;
+            }
         }
     }
     return code::operation::SUCCESS;
@@ -294,8 +325,7 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
             logits_name=name.c_str();
         }
         if (type=="INP"){
-            auto last_address=ctx.core_ctx->context->getTensorAddress(name.c_str());
-            core::cuda::TensorRTCudaMemory::Free(last_address);
+
             ctx.core_ctx->context->setInputShape(name.c_str(),
                 nvinfer1::Dims{2,1,static_cast<int64_t>(input_ids_vector.size())}
             );
@@ -304,12 +334,17 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
                 input_ids_vector.data(),1,
                 input_address,*ctx.core_ctx->stream,core::cuda::DataType::INT64
             );
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,input_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=input_address;
+            }
             ctx.core_ctx->context->setTensorAddress(name.c_str(),input_address);
         }
 
         if (type=="MSK") {
-            auto last_address=ctx.core_ctx->context->getTensorAddress(name.c_str());
-            core::cuda::TensorRTCudaMemory::Free(last_address);
+
             ctx.core_ctx->context->setInputShape(
                 name.c_str(),
                 nvinfer1::Dims{2,1,static_cast<int64_t>(mask_ids_vector.size())}
@@ -319,12 +354,16 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
                 mask_ids_vector.data(),1,
                 mask_address,*ctx.core_ctx->stream,core::cuda::DataType::INT64
             );
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,mask_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=mask_address;
+            }
             ctx.core_ctx->context->setTensorAddress(name.c_str(),mask_address);
         }
 
         if (type=="POS") {
-            auto last_address=ctx.core_ctx->context->getTensorAddress(name.c_str());
-            core::cuda::TensorRTCudaMemory::Free(last_address);
             ctx.core_ctx->context->setInputShape(
                 name.c_str(),
                 nvinfer1::Dims{2,1,static_cast<int64_t>(pos.size())}
@@ -334,16 +373,26 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
                 pos.data(),1,
                 pos_address,*ctx.core_ctx->stream,core::cuda::DataType::INT64
             );
+            if (!ctx.layers_address->contains(name)){
+                ctx.layers_address->emplace(name,pos_address);
+            }else{
+                core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[name]);
+                (*ctx.layers_address)[name]=pos_address;
+            }
             ctx.core_ctx->context->setTensorAddress(name.c_str(),pos_address);
         }
     }
     for (auto& [past_kv,present_kv] : *ctx.kv_mapping ){
 
-        auto last_kv_address=ctx.core_ctx->context->getTensorAddress(past_kv.c_str());
-        core::cuda::TensorRTCudaMemory::Free(last_kv_address);
 
-        auto past_kv_address=ctx.core_ctx->context->getTensorAddress(present_kv.c_str());
-        ctx.core_ctx->context->setTensorAddress(past_kv.c_str(),const_cast<void*>(past_kv_address));
+        auto next_past_kv_address=ctx.core_ctx->context->getOutputTensorAddress(present_kv.c_str());
+        if (!ctx.layers_address->contains(past_kv)){
+            ctx.layers_address->emplace(past_kv,next_past_kv_address);
+        }else{
+            core::cuda::TensorRTCudaMemory::Free((*ctx.layers_address)[past_kv]);
+            (*ctx.layers_address)[past_kv]=next_past_kv_address;
+        }
+        ctx.core_ctx->context->setTensorAddress(past_kv.c_str(),next_past_kv_address);
         ctx.core_ctx->context->setInputShape(past_kv.c_str(),
             nvinfer1::Dims{4,1,4,ctx.abs_token_pos,128}
         );
@@ -359,7 +408,6 @@ int TensorRTIllmFramework::DecodeDefault(TensorRTIllmCtx& ctx) {
             // std::cout<<" "<<dims.d[i];
             size*=dims.d[i];
         }
-
         core::cuda::TensorRTCudaMemory::Malloc(size,present_address,core::cuda::DataType::FLOAT32);
         ctx.core_ctx->context->setTensorAddress(present_kv.c_str(),present_address);
     }
