@@ -31,8 +31,61 @@ int TensorRTCudaGet::GetCudaData(TensorRTCudaData& data, TensorRTCudaAddress& ad
     return code::operation::SUCCESS;
 }
 
-int TensorRTCudaGet::GetCudaData(TensorRTCudaData& data, const void* address, int64_t len, DataType type, cudaStream_t* stream)
+int TensorRTCudaGet::GetCudaData(TensorRTCudaData& data,
+                                 const void* address,
+                                 int64_t len,
+                                 DataType type,
+                                 cudaStream_t* stream)
 {
+    // if (data.data == nullptr) return code::data::DATA_NULL;
+    // if (address == nullptr)   return code::address::ADDRESS_NULL;
+    //
+    // const size_t bytes = static_cast<size_t>(len) * static_cast<size_t>(type);
+    //
+    // // ---- 计时用 event ----
+    // cudaEvent_t e0, e1, e2;
+    // cudaEventCreate(&e0);
+    // cudaEventCreate(&e1);
+    // cudaEventCreate(&e2);
+    //
+    // // e0: 拷贝开始前（此时 stream 上可能还排着推理 kernel）
+    // cudaEventRecord(e0, *stream);
+    //
+    // cudaError_t err = cudaMemcpyAsync(data.data, address, bytes,
+    //                                   cudaMemcpyDeviceToHost, *stream);
+    // if (err != cudaSuccess) {
+    //     std::cerr << "cudaMemcpyAsync failed: " << err
+    //               << " size: " << bytes << std::endl;
+    //     return code::cuda::AYS_FAILED;
+    // }
+    //
+    // // e1: 拷贝任务提交到 stream 之后（GPU 上拷贝完成的位置）
+    // cudaEventRecord(e1, *stream);
+    //
+    // err = cudaStreamSynchronize(*stream);
+    // if (err != cudaSuccess) {
+    //     std::cerr << "cudaStreamSynchronize failed" << std::endl;
+    //     return code::cuda::SYN_FAILED;
+    // }
+    //
+    // // e2: sync 返回后
+    // cudaEventRecord(e2, *stream);
+    // cudaEventSynchronize(e2);
+    //
+    // float wait_ms = 0, copy_ms = 0;
+    // cudaEventElapsedTime(&wait_ms, e0, e1);  // 从“拷贝开始”到“拷贝完成”的 GPU 时间
+    // cudaEventElapsedTime(&copy_ms, e1, e2);  // sync 本身的空转，正常接近 0
+    //
+    // std::cout << "GPU wait+copy: " << wait_ms << " ms, "
+    //           << "sync overhead: " << copy_ms << " ms, "
+    //           << "bytes: " << bytes << std::endl;
+    //
+    // cudaEventDestroy(e0);
+    // cudaEventDestroy(e1);
+    // cudaEventDestroy(e2);
+    //
+    // data.len = len;
+    // return code::operation::SUCCESS;
     if (data.data==nullptr){ return code::data::DATA_NULL;}
 
     if (address==nullptr){ return code::address::ADDRESS_NULL;}

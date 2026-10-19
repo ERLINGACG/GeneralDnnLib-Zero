@@ -33,8 +33,10 @@ namespace gdlz::trt::core{
 
 
     struct TensorRTCoreEngine{
+
         std::unique_ptr<nvinfer1::ICudaEngine> engine{};
-        std::unique_ptr<nvinfer1::IRuntime> runtime{};
+        std::unique_ptr<nvinfer1::IRuntime>    runtime{};
+
         nlohmann::json config{};
         nlohmann::json env{};
         TrtLogger logger=TrtLogger();
@@ -82,6 +84,7 @@ namespace gdlz::trt::core{
     struct TensorBuilderEngineInfo{
         std::unique_ptr<std::vector<TensorRtBuilderShapeInfo>> shapes;
     };
+
 
     struct TensorRTCoreCtx{
         std::unique_ptr<nvinfer1::IExecutionContext> context;

@@ -8,7 +8,7 @@
 #include <driver_types.h>
 #include <memory>
 
-#include "gdlz/trt/core/trt_core_data.h"
+// #include "gdlz/trt/core/trt_core_data.h"
 #define CHECK_CUDA_STATUS(status) \
     if (status != cudaSuccess) { \
     std::cerr << "CUDA Error: " << cudaGetErrorString(status) << std::endl; \
@@ -24,8 +24,8 @@ namespace gdlz::trt::core::cuda{
     };
 
     struct TensorRTCudaData{
-        void*   data;
-        int64_t len;
+        void*   data = nullptr;
+        int64_t len  = 0;
     };
 
     enum class DataType:int32_t{

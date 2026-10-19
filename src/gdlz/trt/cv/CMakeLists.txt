@@ -6,6 +6,7 @@ set(TRT_CV_CPP_FILES
 
         ./core/trt_cv_core.cpp
         ./core/trt_cv_core_director.cpp
+        ./core/private/trt_cv_core_impi.cpp
 )
 message(STATUS "OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}")
 set(TRT_CV_INCLUDE_DIRS

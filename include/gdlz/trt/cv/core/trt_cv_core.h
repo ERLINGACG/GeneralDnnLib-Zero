@@ -6,6 +6,8 @@
 #define GENERALDNNLIB_ZERO_TRT_CV_CORE_H
 #include "trt_cv_core_data.h"
 #include "gdlz/export.h"
+#include "gdlz/trt/core/cuda/trt_cuda_data.h"
+
 namespace gdlz::trt::icv::core{
     class GDLZ_CPP_API TensorRTCvCoreFramework{
         TensorRTCvEngine engine;
@@ -17,18 +19,29 @@ namespace gdlz::trt::icv::core{
             int CreateCtx(TensorRTCvCtx& ctx);
             int GetEngineInfo();
             static int RegisterInputLayer (TensorRTCvCtx& ctx,const char* name,const int64_t* shape,int64_t shape_len);
+            static int ResetInputLayer    (TensorRTCvCtx& ctx,const char* name,const int64_t* shape,int64_t shape_len);
+
             static int RegisterOutputLayer(TensorRTCvCtx& ctx,const char* name,trt::core::cuda::DataType dataType);
-            static int FreeLayer(TensorRTCvCtx& ctx,const char* name);
+            static int ResetOutputLayer   (TensorRTCvCtx& ctx,const char* name,trt::core::cuda::DataType dataType);
+            static int FreeLayer          (TensorRTCvCtx& ctx,const char* name);
 
             static int PostImg(const char* name,TensorRTCvCtx& ctx,
                                void* img, int64_t len,
                                trt::core::cuda::DataType dataType);
 
+            static int BindAddress(const char* name,TensorRTCvCtx& ctx,void* address);
+
             static int Forward(TensorRTCvCtx& ctx);
+
             static int GetOutput(const char* name,TensorRTCvCtx& ctx,
                                  trt::core::cuda::TensorRTCudaData& data,
                                  trt::core::cuda::DataType dataType);
 
+            static void* GetAddress(const char* name, TensorRTCvCtx& ctx);
+
+            static int64_t* GetOutputShapes(const char* name, TensorRTCvCtx& ctx);
+
+            static int64_t  GetOutputShape(const char* name, TensorRTCvCtx& ctx);
 
             template<typename T, typename... Args>
             static int PreProcess(T& processer,Args&&... args){
