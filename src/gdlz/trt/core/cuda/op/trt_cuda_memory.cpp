@@ -8,15 +8,15 @@
 
 #include "gdlz/trt/core/trt_code.h"
 
-int gdlz::trt::core::cuda::TensorRTCudaMemory::Malloc(int64_t size, TensorRTCudaAddress& data, DataType type)
-{
-    if (data.address!=nullptr){
-        cudaFree(&data.address);
-    }
-    cudaMalloc(&data.address,size* static_cast<size_t>(type));
-    data.org_array_len = size;
-    return code::operation::SUCCESS;
-}
+// int gdlz::trt::core::cuda::TensorRTCudaMemory::Malloc(int64_t size, TensorRTCudaAddress& data, DataType type)
+// {
+//     if (data.address!=nullptr){
+//         cudaFree(&data.address);
+//     }
+//     cudaMalloc(&data.address,size* static_cast<size_t>(type));
+//     data.org_array_len = size;
+//     return code::operation::SUCCESS;
+// }
 
 int gdlz::trt::core::cuda::TensorRTCudaMemory::Malloc(int64_t size, void*& address, DataType type)
 {
@@ -24,17 +24,8 @@ int gdlz::trt::core::cuda::TensorRTCudaMemory::Malloc(int64_t size, void*& addre
     return code::operation::SUCCESS;
 }
 
-int gdlz::trt::core::cuda::TensorRTCudaMemory::Free(TensorRTCudaAddress& data)
-{
-    if (data.address!=nullptr){
-        cudaFree(&data.address);
-    }
-    if (data.stream!=nullptr){
-        cudaStreamDestroy(*data.stream);
-        data.stream = nullptr;
-    }
-    return code::operation::SUCCESS;
-}
+
+
 
 int gdlz::trt::core::cuda::TensorRTCudaMemory::Free(const void*& data) {
 

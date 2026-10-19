@@ -14,7 +14,9 @@ set(CORE_CPP_FILES
         core/cuda/op/trt_cuda_post.cpp
         core/cuda/op/trt_cuda_get.cpp
         core/cuda/op/trt_cuda_memory.cpp
-        core/cuda/op/trt_cuda_address.cpp
+
+        core/cuda/buffer/trt_cuda_buffer.cpp
+        core/cuda/buffer/trt_cuda_buffer_oper.cpp
 )
 set(I_TRT_INCLUDE
         ${CMAKE_SOURCE_DIR}/include

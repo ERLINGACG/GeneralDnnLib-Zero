@@ -6,7 +6,7 @@
 #define GENERALDNNLIB_ZERO_TRT_CV_OCR_FRAMEWORK_H
 #include "trt_cv_ocr_data.h"
 
-// #include "../../../../../../Clib/opencv/include/opencv2/core/mat.hpp"
+
 #include <opencv2/opencv.hpp>
 #include "gdlz/export.h"
 namespace gdlz::trt::icv::ocr {
